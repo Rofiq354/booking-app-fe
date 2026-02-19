@@ -44,7 +44,8 @@ const SidebarContent = ({
     <div
       className={`border-b border-sidebar-border ${collapsed ? "px-3 py-5" : "px-5 py-6"}`}
     >
-      <div
+      <Link
+        to="/"
         className={`flex items-center ${collapsed ? "justify-center" : "gap-3"}`}
       >
         <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-sidebar-primary">
@@ -64,7 +65,7 @@ const SidebarContent = ({
             </div>
           </div>
         )}
-      </div>
+      </Link>
     </div>
 
     {/* Nav */}

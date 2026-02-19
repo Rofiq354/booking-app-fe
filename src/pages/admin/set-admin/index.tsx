@@ -16,7 +16,7 @@ const SetAdminPage = () => {
       console.log(res);
       setAdmins(res.data);
     } catch (error) {
-      const errorData = getErrorMessage(error); 
+      const errorData = getErrorMessage(error);
       toast.error(errorData.message as string);
     } finally {
       setTimeout(() => {
@@ -95,9 +95,7 @@ const SetAdminPage = () => {
         </button>
       </div>
 
-      <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
-        <DataTable columns={columns} data={admins} isLoading={isLoading} />
-      </div>
+      <DataTable columns={columns} data={admins} isLoading={isLoading} />
 
       <AddAdminModal
         isOpen={isModalOpen}

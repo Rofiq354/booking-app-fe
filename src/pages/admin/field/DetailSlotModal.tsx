@@ -3,6 +3,7 @@ import Modal from "../../../components/FormModal";
 import { timeSlotService, type TimeSlot } from "../../../services/time-slot";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "../../../utils/error";
+import { CalendarDays, Clock, Plus, Info, LayoutGrid } from "lucide-react";
 
 interface DetailSlotModalProps {
   isOpen: boolean;
@@ -28,7 +29,6 @@ const DetailSlotModal = ({
         setLoading(true);
         try {
           const res = await timeSlotService.getSlots(fieldId);
-          // Karena res.data isinya object { id, name, slots: [] }
           setSlots(res.data.slots);
         } catch (error: unknown) {
           const errorData = getErrorMessage(error);
@@ -60,131 +60,146 @@ const DetailSlotModal = ({
     }
   }, [dates, activeTab]);
 
-  if (!isOpen) return null;
-
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={`Detail Jadwal: ${fieldName}`}
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title="Manajemen Jadwal" size="xl">
       <div className="space-y-6">
-        {/* Header Section */}
-        <div className="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100">
-          <div>
-            <h3 className="text-sm font-bold text-slate-700">Manajemen Slot</h3>
-            <p className="text-[10px] text-slate-500 italic">
-              Atur ketersediaan jam operasional
-            </p>
+        {/* Header Lapangan */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-secondary/30 p-4 rounded-2xl border border-secondary">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/20">
+              <LayoutGrid size={20} />
+            </div>
+            <div>
+              <h3 className="text-base font-black text-foreground uppercase tracking-tight italic">
+                {fieldName}
+              </h3>
+              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
+                Kontrol Ketersediaan Sesi
+              </p>
+            </div>
           </div>
           <button
             onClick={onAddClick}
             disabled={loading}
-            className="text-xs bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 text-white px-4 py-2 rounded-lg font-bold transition-all shadow-sm flex items-center gap-2 active:scale-95"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider hover:opacity-90 shadow-lg shadow-primary/20 transition-all active:scale-95 disabled:opacity-50"
           >
-            <span className="text-sm">+</span> Tambah Slot
+            <Plus size={16} strokeWidth={3} />
+            Tambah Sesi
           </button>
         </div>
 
         {/* Navigation Tabs - Modern Pill Style */}
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          {dates.length > 0
-            ? dates.map((date) => {
-                const d = new Date(date);
-                const isActive = activeTab === date;
-                return (
-                  <button
-                    key={date}
-                    onClick={() => setActiveTab(date)}
-                    className={`flex flex-col items-center min-w-17.5 px-3 py-2 rounded-xl border transition-all ${
-                      isActive
-                        ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-100"
-                        : "bg-white border-slate-200 text-slate-500 hover:border-indigo-300 hover:bg-indigo-50"
-                    }`}
-                  >
-                    <span className="text-[10px] uppercase font-bold tracking-tighter">
-                      {d.toLocaleDateString("id-ID", { weekday: "short" })}
-                    </span>
-                    <span className="text-sm font-black">
-                      {d.toLocaleDateString("id-ID", { day: "numeric" })}
-                    </span>
-                    <span className="text-[9px]">
-                      {d.toLocaleDateString("id-ID", { month: "short" })}
-                    </span>
-                  </button>
-                );
-              })
-            : !loading && (
-                <div className="w-full py-4 text-center bg-slate-50 rounded-lg border border-dashed border-slate-300">
-                  <p className="text-xs text-slate-400">
-                    Belum ada jadwal yang diatur
-                  </p>
-                </div>
-              )}
+        <div className="space-y-3">
+          <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            <CalendarDays size={14} className="text-primary" />
+            Pilih Tanggal Operasional
+          </label>
+          <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
+            {dates.length > 0
+              ? dates.map((date) => {
+                  const d = new Date(date);
+                  const isActive = activeTab === date;
+                  return (
+                    <button
+                      key={date}
+                      onClick={() => setActiveTab(date)}
+                      className={`flex flex-col items-center min-w-[80px] p-3 rounded-2xl border transition-all duration-300 ${
+                        isActive
+                          ? "bg-primary border-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105"
+                          : "bg-card border-border text-muted-foreground hover:border-primary/50 hover:bg-muted"
+                      }`}
+                    >
+                      <span className="text-[9px] uppercase font-black tracking-tighter opacity-80">
+                        {d.toLocaleDateString("id-ID", { weekday: "short" })}
+                      </span>
+                      <span className="text-lg font-black leading-none my-1">
+                        {d.toLocaleDateString("id-ID", { day: "numeric" })}
+                      </span>
+                      <span className="text-[9px] font-bold uppercase">
+                        {d.toLocaleDateString("id-ID", { month: "short" })}
+                      </span>
+                    </button>
+                  );
+                })
+              : !loading && (
+                  <div className="w-full py-8 text-center bg-muted/30 rounded-2xl border-2 border-dashed border-border">
+                    <Info
+                      size={24}
+                      className="mx-auto text-muted-foreground/30 mb-2"
+                    />
+                    <p className="text-xs font-bold text-muted-foreground uppercase">
+                      Belum ada jadwal operasional
+                    </p>
+                  </div>
+                )}
+          </div>
         </div>
 
         {/* Slot Grid Section */}
-        <div className="relative">
-          <div className="grid grid-cols-3 gap-3 max-h-80 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200">
-            {loading ? (
-              <>
-                {[...Array(9)].map((_, i) => (
+        <div className="space-y-3">
+          <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            <Clock size={14} className="text-primary" />
+            Sesi Waktu Terdaftar
+          </label>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
+            {loading
+              ? Array.from({ length: 8 }).map((_, i) => (
                   <div
                     key={i}
-                    className="h-16 rounded-xl border border-slate-100 bg-slate-50 animate-pulse"
+                    className="h-20 rounded-2xl bg-muted animate-pulse border border-border"
                   />
-                ))}
-              </>
-            ) : activeTab ? (
-              groupedSlots[activeTab]?.map((slot: TimeSlot) => {
-                const isBooked = slot.booked;
-                return (
-                  <div
-                    key={slot.id}
-                    className={`relative group p-3 rounded-xl border transition-all duration-200 shadow-sm ${
-                      isBooked
-                        ? "bg-red-50 border-red-100 text-red-700 opacity-80"
-                        : "bg-white border-slate-200 text-slate-700 hover:border-green-400 hover:shadow-green-50"
-                    }`}
-                  >
-                    <div className="flex flex-col items-center gap-1">
-                      <p className="text-xs font-black tracking-tight">
-                        {new Date(slot.startTime).toLocaleTimeString("id-ID", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
+                ))
+              : activeTab
+                ? groupedSlots[activeTab]?.map((slot: TimeSlot) => {
+                    const isBooked = slot.booked;
+                    return (
                       <div
-                        className={`px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-widest ${
+                        key={slot.id}
+                        className={`relative p-4 rounded-2xl border transition-all duration-200 group ${
                           isBooked
-                            ? "bg-red-200 text-red-800"
-                            : "bg-green-100 text-green-700"
+                            ? "bg-destructive/5 border-destructive/20"
+                            : "bg-card border-border hover:border-primary hover:shadow-md"
                         }`}
                       >
-                        {isBooked ? "Terisi" : "Tersedia"}
+                        <div className="flex flex-col items-center gap-2 text-center">
+                          <p
+                            className={`text-sm font-black tracking-tight ${isBooked ? "text-destructive" : "text-foreground"}`}
+                          >
+                            {new Date(slot.startTime).toLocaleTimeString(
+                              "id-ID",
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )}
+                          </p>
+                          <div
+                            className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest shadow-sm ${
+                              isBooked ? "badge-booked" : "badge-available"
+                            }`}
+                          >
+                            {isBooked ? "Terisi" : "Tersedia"}
+                          </div>
+                        </div>
+                        {/* Status Indicator Dot */}
+                        <div
+                          className={`absolute top-2 right-2 w-1.5 h-1.5 rounded-full ${isBooked ? "bg-destructive animate-pulse" : "bg-primary"}`}
+                        />
                       </div>
-                    </div>
-
-                    {/* Dot decorator */}
-                    <div
-                      className={`absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full ${
-                        isBooked ? "bg-red-400" : "bg-green-400"
-                      }`}
-                    />
-                  </div>
-                );
-              })
-            ) : null}
+                    );
+                  })
+                : null}
           </div>
         </div>
 
         {/* Footer Action */}
-        <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+        <div className="flex justify-end pt-4 border-t border-border">
           <button
             onClick={onClose}
-            className="px-8 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition-all active:scale-95"
+            className="px-10 py-3 bg-muted text-foreground hover:bg-muted/80 rounded-xl font-black text-xs uppercase tracking-widest transition-all active:scale-95"
           >
-            Tutup
+            Tutup Panel
           </button>
         </div>
       </div>
