@@ -1,1 +1,351 @@
+/* ============================================================
+   index.css — Shadcn-style Theme untuk Vite + Tailwind CSS v4
+   Primary Color: #00a63e (Futsal Green)
+   
+   Cara pakai:
+   1. Taruh file ini di src/index.css
+   2. Import di src/main.jsx: import './index.css'
+   3. Gunakan class Tailwind seperti biasa:
+      bg-background, text-foreground, bg-primary, dll.
+   4. Untuk dark mode: tambahkan class "dark" di <html>
+   ============================================================ */
+
 @import "tailwindcss";
+
+/* ============================================================
+   @theme — Mendaftarkan CSS Variables ke Tailwind v4
+   Dengan "inline", Tailwind membaca nilai dari CSS var di runtime
+   ============================================================ */
+@theme inline {
+  /* --- Core Semantic Colors --- */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* --- Sidebar --- */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* --- Chart Colors (untuk grafik/statistik booking) --- */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* --- Border Radius --- */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-full: 9999px;
+
+  /* --- Shadows --- */
+  --shadow-sm: var(--shadow-sm-value);
+  --shadow-md: var(--shadow-md-value);
+  --shadow-lg: var(--shadow-lg-value);
+  --shadow-card: var(--shadow-card-value);
+}
+
+/* ============================================================
+   :root — Light Mode Variables
+   Primary: #00a63e → hsl(142 100% 32%)
+   ============================================================ */
+:root {
+  /* Radius dasar (ubah sesuai selera: 0rem = kotak, 0.75rem = rounded) */
+  --radius: 0.625rem;
+
+  /* ---- Backgrounds & Foregrounds ---- */
+  --background: hsl(0 0% 100%); /* Pure White */
+  --foreground: hsl(150 15% 8%); /* Near Black dengan hint hijau */
+
+  --card: hsl(0 0% 100%); /* White */
+  --card-foreground: hsl(150 15% 8%);
+
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(150 15% 8%);
+
+  /* ---- Primary — #00a63e Futsal Green ---- */
+  --primary: hsl(142 100% 32%); /* #00a63e */
+  --primary-foreground: hsl(0 0% 100%); /* White on green */
+
+  /* ---- Secondary — Green Tint (ringan) ---- */
+  --secondary: hsl(142 30% 94%); /* Very light green */
+  --secondary-foreground: hsl(142 60% 20%); /* Dark green text */
+
+  /* ---- Muted — Abu netral ---- */
+  --muted: hsl(150 10% 96%); /* Light gray */
+  --muted-foreground: hsl(150 8% 45%); /* Medium gray */
+
+  /* ---- Accent — Lime/Teal untuk kontras ---- */
+  --accent: hsl(142 40% 90%); /* Soft green accent */
+  --accent-foreground: hsl(142 70% 18%); /* Dark green */
+
+  /* ---- Status Colors ---- */
+  --destructive: hsl(0 84% 55%); /* Red */
+  --destructive-foreground: hsl(0 0% 100%);
+
+  --success: hsl(142 100% 32%); /* Same as primary */
+  --success-foreground: hsl(0 0% 100%);
+
+  --warning: hsl(38 92% 50%); /* Amber */
+  --warning-foreground: hsl(38 92% 10%);
+
+  --info: hsl(199 89% 48%); /* Sky Blue */
+  --info-foreground: hsl(0 0% 100%);
+
+  /* ---- Borders & Inputs ---- */
+  --border: hsl(150 12% 88%); /* Subtle green-gray border */
+  --input: hsl(150 12% 88%);
+  --ring: hsl(142 100% 32%); /* Focus ring = primary */
+
+  /* ---- Sidebar ---- */
+  --sidebar: hsl(142 25% 97%); /* Very light green tint */
+  --sidebar-foreground: hsl(150 15% 15%);
+  --sidebar-primary: hsl(142 100% 32%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(142 40% 91%);
+  --sidebar-accent-foreground: hsl(142 60% 18%);
+  --sidebar-border: hsl(150 12% 88%);
+  --sidebar-ring: hsl(142 100% 32%);
+
+  /* ---- Chart Colors ---- */
+  --chart-1: hsl(142 100% 32%); /* Primary Green */
+  --chart-2: hsl(162 70% 38%); /* Teal */
+  --chart-3: hsl(38 92% 50%); /* Amber */
+  --chart-4: hsl(199 89% 48%); /* Sky */
+  --chart-5: hsl(280 65% 55%); /* Purple */
+
+  /* ---- Shadows ---- */
+  --shadow-sm-value: 0 1px 2px 0 hsl(142 30% 15% / 0.05);
+  --shadow-md-value:
+    0 4px 6px -1px hsl(142 30% 15% / 0.08),
+    0 2px 4px -2px hsl(142 30% 15% / 0.06);
+  --shadow-lg-value:
+    0 10px 15px -3px hsl(142 30% 15% / 0.1),
+    0 4px 6px -4px hsl(142 30% 15% / 0.08);
+  --shadow-card-value:
+    0 2px 8px 0 hsl(142 30% 15% / 0.08), 0 0 0 1px hsl(150 12% 88%);
+}
+
+/* ============================================================
+   .dark — Dark Mode Variables
+   ============================================================ */
+.dark {
+  /* ---- Backgrounds & Foregrounds ---- */
+  --background: hsl(150 15% 6%); /* Deep dark green-black */
+  --foreground: hsl(150 10% 95%); /* Off-white */
+
+  --card: hsl(150 15% 9%); /* Slightly lighter than bg */
+  --card-foreground: hsl(150 10% 95%);
+
+  --popover: hsl(150 15% 8%);
+  --popover-foreground: hsl(150 10% 95%);
+
+  /* ---- Primary — sedikit lebih terang di dark mode ---- */
+  --primary: hsl(142 85% 40%); /* Brighter green on dark */
+  --primary-foreground: hsl(150 15% 4%); /* Very dark text on primary */
+
+  /* ---- Secondary ---- */
+  --secondary: hsl(142 20% 16%); /* Dark green muted */
+  --secondary-foreground: hsl(142 50% 80%);
+
+  /* ---- Muted ---- */
+  --muted: hsl(150 12% 13%);
+  --muted-foreground: hsl(150 8% 58%);
+
+  /* ---- Accent ---- */
+  --accent: hsl(142 25% 18%);
+  --accent-foreground: hsl(142 60% 80%);
+
+  /* ---- Status Colors ---- */
+  --destructive: hsl(0 72% 50%);
+  --destructive-foreground: hsl(0 0% 98%);
+
+  --success: hsl(142 85% 40%);
+  --success-foreground: hsl(150 15% 4%);
+
+  --warning: hsl(38 92% 60%);
+  --warning-foreground: hsl(38 50% 10%);
+
+  --info: hsl(199 89% 55%);
+  --info-foreground: hsl(199 50% 8%);
+
+  /* ---- Borders & Inputs ---- */
+  --border: hsl(150 15% 18%);
+  --input: hsl(150 15% 18%);
+  --ring: hsl(142 85% 40%);
+
+  /* ---- Sidebar ---- */
+  --sidebar: hsl(150 18% 7%);
+  --sidebar-foreground: hsl(150 10% 88%);
+  --sidebar-primary: hsl(142 85% 40%);
+  --sidebar-primary-foreground: hsl(150 15% 4%);
+  --sidebar-accent: hsl(142 20% 16%);
+  --sidebar-accent-foreground: hsl(142 50% 80%);
+  --sidebar-border: hsl(150 15% 16%);
+  --sidebar-ring: hsl(142 85% 40%);
+
+  /* ---- Chart Colors (lebih vivid di dark mode) ---- */
+  --chart-1: hsl(142 85% 45%);
+  --chart-2: hsl(162 65% 48%);
+  --chart-3: hsl(38 92% 60%);
+  --chart-4: hsl(199 89% 58%);
+  --chart-5: hsl(280 65% 65%);
+
+  /* ---- Shadows ---- */
+  --shadow-sm-value: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
+  --shadow-md-value:
+    0 4px 6px -1px hsl(0 0% 0% / 0.4), 0 2px 4px -2px hsl(0 0% 0% / 0.3);
+  --shadow-lg-value:
+    0 10px 15px -3px hsl(0 0% 0% / 0.5), 0 4px 6px -4px hsl(0 0% 0% / 0.4);
+  --shadow-card-value:
+    0 2px 8px 0 hsl(0 0% 0% / 0.4), 0 0 0 1px hsl(150 15% 18%);
+}
+
+/* ============================================================
+   Base Styles — Reset & Defaults
+   ============================================================ */
+* {
+  border-color: var(--border);
+  outline-color: color-mix(in srgb, var(--ring), transparent 50%);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+  /* Font stack — ganti dengan font project kamu */
+  font-family:
+    "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   Utility Classes Tambahan (opsional, shadcn-style helpers)
+   ============================================================ */
+
+/* Focus ring yang konsisten */
+.focus-ring {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+.focus-ring:focus-visible {
+  outline-color: var(--ring);
+  outline-offset: 2px;
+}
+
+/* Glass effect (bagus untuk card futsal/hero) */
+.glass {
+  background: color-mix(in srgb, var(--card), transparent 20%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in srgb, var(--border), transparent 30%);
+}
+
+/* Gradient primary (untuk hero section, banner booking) */
+.gradient-primary {
+  background: linear-gradient(
+    135deg,
+    hsl(142 100% 28%) 0%,
+    hsl(162 90% 35%) 100%
+  );
+}
+
+.gradient-primary-soft {
+  background: linear-gradient(
+    135deg,
+    hsl(142 100% 32% / 0.12) 0%,
+    hsl(162 70% 40% / 0.08) 100%
+  );
+}
+
+/* Status badge helpers */
+.badge-available {
+  background-color: color-mix(in srgb, var(--success), transparent 85%);
+  color: var(--success);
+  border: 1px solid color-mix(in srgb, var(--success), transparent 70%);
+}
+.badge-booked {
+  background-color: color-mix(in srgb, var(--destructive), transparent 85%);
+  color: var(--destructive);
+  border: 1px solid color-mix(in srgb, var(--destructive), transparent 70%);
+}
+.badge-pending {
+  background-color: color-mix(in srgb, var(--warning), transparent 85%);
+  color: hsl(38 80% 30%);
+  border: 1px solid color-mix(in srgb, var(--warning), transparent 70%);
+}
+
+/* ============================================================
+   Scrollbar styling (subtle, matches theme)
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--muted);
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--primary), transparent 50%);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* ============================================================
+   Selection color
+   ============================================================ */
+::selection {
+  background-color: color-mix(in srgb, var(--primary), transparent 75%);
+  color: var(--foreground);
+}

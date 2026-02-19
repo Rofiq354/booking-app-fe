@@ -3,10 +3,48 @@ import api from "../services/api";
 import { getErrorMessage } from "../utils/error";
 import type { MyErrorResponse } from "../types/error";
 
+// ─── Types ───────────────────────────────────────────────────
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+}
+
+interface AuthState {
+  user: User | null;
+  isInitialized: boolean;
+  loading: boolean;
+  registerLoading: boolean;
+  error: MyErrorResponse | null;
+}
+
 interface LoginCredentials {
   email: string;
   password: string;
 }
+
+interface RegisterCredentials {
+  name: string;
+  email: string;
+  password: string;
+}
+
+// ─── Thunks ──────────────────────────────────────────────────
+
+export const registerUser = createAsyncThunk<
+  void,
+  RegisterCredentials,
+  { rejectValue: MyErrorResponse }
+>("auth/registerUser", async (userData, { rejectWithValue }) => {
+  try {
+    await api.post("/user/register", userData);
+    // Register tidak auto-login, redirect ke /login setelah sukses
+  } catch (err: unknown) {
+    const errorMessage = getErrorMessage(err);
+    return rejectWithValue(errorMessage);
+  }
+});
 
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
@@ -48,27 +86,16 @@ export const logoutUser = createAsyncThunk(
   },
 );
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-}
-
-interface AuthState {
-  user: User | null;
-  isInitialized: boolean;
-  loading: boolean;
-  error: MyErrorResponse | null;
-}
-
+// ─── Initial State ───────────────────────────────────────────
 const initialState: AuthState = {
   user: null,
   isInitialized: false,
   loading: false,
+  registerLoading: false,
   error: null,
 };
 
+// ─── Slice ───────────────────────────────────────────────────
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -79,7 +106,21 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Login
+      // ── Register ──────────────────────────────────────────
+      .addCase(registerUser.pending, (state) => {
+        state.registerLoading = true;
+        state.error = null;
+      })
+      .addCase(registerUser.fulfilled, (state) => {
+        state.registerLoading = false;
+        // user tetap null — harus login dulu setelah register
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.registerLoading = false;
+        state.error = action.payload as MyErrorResponse;
+      })
+
+      // ── Login ─────────────────────────────────────────────
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -94,12 +135,13 @@ const authSlice = createSlice({
         state.error = action.payload as MyErrorResponse;
         state.isInitialized = true;
       })
-      // Get Me (Cek Session saat Refresh)
+
+      // ── Get Me (cek session saat refresh) ─────────────────
       .addCase(getMe.pending, (state) => {
         state.error = null;
       })
       .addCase(getMe.fulfilled, (state, action) => {
-        state.user = action.payload as User;
+        state.user = action.payload;
         state.isInitialized = true;
         state.loading = false;
       })
@@ -109,7 +151,8 @@ const authSlice = createSlice({
         state.error = action.payload as MyErrorResponse;
         state.loading = false;
       })
-      // Logout
+
+      // ── Logout ────────────────────────────────────────────
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
       });

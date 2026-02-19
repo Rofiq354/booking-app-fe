@@ -8,7 +8,6 @@ import Dashboard from "./pages/admin/dashboard";
 import { useSelector } from "react-redux";
 import BookingPage from "./pages/admin/booking";
 import SetAdminPage from "./pages/admin/set-admin";
-import "./App.css";
 import { useEffect, useRef, useState } from "react";
 import { getMe } from "./store/authSlice";
 import { Toaster } from "react-hot-toast";
@@ -16,10 +15,26 @@ import LandingPage from "./pages/user/landing-page";
 import UserLayout from "./pages/user";
 import OfflineScreen from "./lib/OffileScreen";
 
+// ── Guard: hanya bisa diakses jika belum login ─────────────────────────────
+// Jika sudah login → redirect sesuai role
+const GuestRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useSelector((state: RootState) => state.auth);
+  if (!user) return <>{children}</>;
+  return <Navigate to={user.role === "ADMIN" ? "/admin" : "/"} replace />;
+};
+
+// ── Guard: hanya bisa diakses jika sudah login sebagai admin ───────────────
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useSelector((state: RootState) => state.auth);
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== "ADMIN") return <Navigate to="/" replace />;
+  return <>{children}</>;
+};
+
 function App() {
   const dispatch = useAppDispatch();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const { user, isInitialized } = useSelector((state: RootState) => state.auth);
+  const { isInitialized } = useSelector((state: RootState) => state.auth);
   const initialized = useRef(false);
 
   useEffect(() => {
@@ -42,9 +57,7 @@ function App() {
     };
   }, []);
 
-  if (!isOnline) {
-    return <OfflineScreen />;
-  }
+  if (!isOnline) return <OfflineScreen />;
 
   if (!isInitialized) {
     return <div className="loading-screen">Memuat Aplikasi...</div>;
@@ -55,26 +68,44 @@ function App() {
       <Toaster position="top-center" reverseOrder={false} />
 
       <Routes>
+        {/* ── Auth routes (hanya untuk yang belum login) ── */}
         <Route
           path="/login"
-          element={user ? <Navigate to="/admin" replace /> : <Login />}
+          element={
+            <GuestRoute>
+              <Login />
+            </GuestRoute>
+          }
         />
         <Route
           path="/register"
-          element={user ? <Navigate to="/admin" replace /> : <Register />}
+          element={
+            <GuestRoute>
+              <Register />
+            </GuestRoute>
+          }
         />
 
-        <Route path="/admin" element={<AdminLayout />}>
+        {/* ── Admin routes (hanya untuk role admin) ── */}
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminLayout />
+            </AdminRoute>
+          }
+        >
           <Route index element={<Dashboard />} />
           <Route path="field" element={<FieldPage />} />
           <Route path="data-booking" element={<BookingPage />} />
           <Route path="data-admin" element={<SetAdminPage />} />
         </Route>
+
+        {/* ── User routes ── */}
         <Route path="/" element={<UserLayout />}>
           <Route index element={<LandingPage />} />
         </Route>
 
-        {/* Redirect root ke /admin */}
         <Route path="*" element={<div>Halaman Tidak Ditemukan</div>} />
       </Routes>
     </>
