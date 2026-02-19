@@ -1,11 +1,22 @@
 import api from "./api";
 
+// Slot waktu yang tersedia di lapangan
+export interface Slot {
+  id: number;
+  fieldId: number;
+  startTime: string; // ISO 8601
+  endTime: string; // ISO 8601
+  createdAt: string;
+}
+
+// Data lapangan sesuai response API
 export interface FieldRequest {
   id: number;
   name: string;
   description: string | null;
-  image: string | null;
-  price: number;
+  image: string | null; // Full URL dari Cloudinary
+  price: number; // Dalam rupiah, misal: 100000
+  slots?: Slot[]; // Opsional, ada di GET /field
 }
 
 export interface ApiResponse {
@@ -15,36 +26,31 @@ export interface ApiResponse {
 }
 
 export const fieldService = {
-  // Ambil semua data lapangan
+  // Ambil semua data lapangan (beserta slots)
   getAllFields: async () => {
     const response = await api.get<ApiResponse>("/field");
-    console.log(response);
     return response.data;
   },
 
   // Buat lapangan baru
   createField: async (data: FormData) => {
-    const response = await api.post<ApiResponse>("/field", data, {
-      headers: {
-        "Content-Type": "multipart/form-data", // Penting untuk upload file
-      },
+    const response = await api.post<ApiResponse>("/admin/field", data, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
   },
 
-  // Buat lapangan baru
+  // Update lapangan
   updateField: async (id: number, data: FormData) => {
-    const response = await api.put<ApiResponse>(`/field/${id}`, data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
+    const response = await api.put<ApiResponse>(`/admin/field/${id}`, data, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
   },
 
   // Hapus lapangan
   deleteField: async (id: number) => {
-    const response = await api.delete<ApiResponse>(`/field/${id}`);
+    const response = await api.delete<ApiResponse>(`/admin/field/${id}`);
     return response.data;
   },
 };
