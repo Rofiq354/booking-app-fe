@@ -10,6 +10,7 @@ import DetailSlotModal from "./DetailSlotModal";
 import type { TimeSlot } from "../../../services/time-slot";
 import { TrashIcon } from "../../../components/icon/Trash";
 import { EditIcon } from "../../../components/icon/Edit";
+import DetailDrawer from "./DetailField";
 
 export interface FieldWithSlots extends FieldRequest {
   slots: TimeSlot[];
@@ -111,7 +112,14 @@ const FieldPage = () => {
     },
     {
       header: "Nama Lapangan",
-      key: "name",
+      render: (item: FieldWithSlots) => (
+        <button
+          onClick={() => setSelectedField(item)} // SET DATA DISINI
+          className="font-medium text-left"
+        >
+          {item.name}
+        </button>
+      ),
     },
     {
       header: "Deskripsi",
@@ -290,6 +298,11 @@ const FieldPage = () => {
           fieldName={activeField.name}
         />
       )}
+
+      <DetailDrawer
+        field={selectedField}
+        onClose={() => setSelectedField(null)}
+      />
     </div>
   );
 };
