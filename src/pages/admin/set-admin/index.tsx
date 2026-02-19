@@ -16,7 +16,8 @@ const SetAdminPage = () => {
       console.log(res);
       setAdmins(res.data);
     } catch (error) {
-      toast(getErrorMessage(error));
+      const errorData = getErrorMessage(error); 
+      toast.error(errorData.message as string);
     } finally {
       setTimeout(() => {
         setIsLoading(false);

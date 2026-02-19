@@ -44,7 +44,8 @@ const FormField = ({
         onClose();
       }
     } catch (error) {
-      toast.error(getErrorMessage(error));
+      const errorData = getErrorMessage(error);
+      toast.error(errorData.message as string);
     } finally {
       setLoading(false);
     }

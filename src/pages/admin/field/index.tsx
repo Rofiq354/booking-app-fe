@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import FormField from "./Form";
 import DataTable from "../../../components/DataTable";
 import { fieldService, type FieldRequest } from "../../../services/field";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { getErrorMessage } from "../../../utils/error";
 import ConfirmModal from "../../../components/ConfirmDeleteModal";
 import FormTimeSlot from "./FormTimeSlot";
@@ -88,7 +88,8 @@ const FieldPage = () => {
         setIsConfirmOpen(false); // Tutup modal
       }
     } catch (error) {
-      toast.error(getErrorMessage(error));
+      const errorData = getErrorMessage(error);
+      toast.error(errorData.message as string);
     } finally {
       setIsDeleting(false);
       setFieldToDelete(null);
@@ -218,7 +219,6 @@ const FieldPage = () => {
 
   return (
     <div className="p-8 bg-slate-50 min-h-screen">
-      <Toaster position="top-center" reverseOrder={false} />
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-2xl font-bold text-slate-800">Daftar Lapangan</h1>

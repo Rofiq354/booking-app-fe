@@ -1,11 +1,28 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import type { MyErrorResponse } from "../types/error";
 
-export const getErrorMessage = (error: unknown): string => {
+export const getErrorMessage = (error: unknown): MyErrorResponse => {
   if (axios.isAxiosError(error)) {
-    return error.response?.data?.message || "Gagal menghubungi server";
+    const axiosError = error as AxiosError<MyErrorResponse>;
+
+    return {
+      message: axiosError.response?.data?.message || "Gagal menghubungi server",
+      code:
+        axiosError.response?.data?.code || axiosError.response?.status || 500,
+      status: axiosError.response?.data?.status || "error",
+    };
   }
   if (error instanceof Error) {
-    return error.message;
+    return {
+      message: error.message,
+      code: 500,
+      status: "error",
+    };
   }
-  return "Terjadi kesalahan yang tidak diketahui";
+
+  return {
+    message: "Kesalahan tidak diketahui",
+    code: 500,
+    status: "error",
+  };
 };

@@ -1,11 +1,10 @@
-import React, {useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Lock, User, Activity } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../store";
 import { loginUser } from "../store/authSlice";
 import toast from "react-hot-toast";
-import { Toaster } from "react-hot-toast";
 import type { MyErrorResponse } from "../types/error";
 
 const Login = () => {
@@ -37,7 +36,6 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
-      <Toaster position="top-center" reverseOrder={false} />
       {/* Kartu Login */}
       <div className="max-w-md w-full bg-slate-900 rounded-2xl shadow-2xl border border-slate-800 p-8">
         {/* Logo & Header */}

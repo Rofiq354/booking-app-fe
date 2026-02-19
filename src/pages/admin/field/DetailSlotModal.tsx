@@ -30,8 +30,9 @@ const DetailSlotModal = ({
           const res = await timeSlotService.getSlots(fieldId);
           // Karena res.data isinya object { id, name, slots: [] }
           setSlots(res.data.slots);
-        } catch (error) {
-          toast.error(getErrorMessage(error));
+        } catch (error: unknown) {
+          const errorData = getErrorMessage(error);
+          toast.error(errorData.message as string);
         } finally {
           setLoading(false);
         }

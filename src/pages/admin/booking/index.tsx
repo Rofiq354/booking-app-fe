@@ -18,7 +18,8 @@ const BookingPage = () => {
       console.log(res);
       setBookings(res.data);
     } catch (error) {
-      toast.error(getErrorMessage(error));
+      const errorData = getErrorMessage(error);
+      toast.error(errorData.message as string);
     } finally {
       if (!isSilent) {
         setTimeout(() => setIsInitialLoad(false), 1000);

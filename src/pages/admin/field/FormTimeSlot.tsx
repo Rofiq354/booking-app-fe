@@ -36,8 +36,9 @@ const FormTimeSlot = ({
         onSuccess(); // Ini akan memicu fetchFields() di FieldPage
         onClose();
       }
-    } catch (err) {
-      toast.error(getErrorMessage(err));
+    } catch (err: unknown) {
+      const errorData = getErrorMessage(err);
+      toast.error(errorData.message as string);
     } finally {
       setLoading(false);
     }

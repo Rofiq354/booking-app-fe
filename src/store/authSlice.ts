@@ -1,34 +1,39 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../services/api";
+import { getErrorMessage } from "../utils/error";
+import type { MyErrorResponse } from "../types/error";
+
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
 
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
-  async (userData: any, { rejectWithValue }) => {
+  async (userData: LoginCredentials, { rejectWithValue }) => {
     try {
       const response = await api.post("/user/login", userData);
       return response.data.data;
-    } catch (err: any) {
-      const errorData = err.response?.data || {
-        code: 500,
-        success: false,
-        message: "Kesalahan mengambil data.",
-      };
-      return rejectWithValue(errorData);
+    } catch (err: unknown) {
+      const errorMessage = getErrorMessage(err);
+      return rejectWithValue(errorMessage);
     }
   },
 );
 
-export const getMe = createAsyncThunk(
-  "auth/getMe",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await api.get("/me");
-      return response.data.data.user;
-    } catch (err: any) {
-      return rejectWithValue("Session Expired");
-    }
-  },
-);
+export const getMe = createAsyncThunk<
+  User,
+  void,
+  { rejectValue: MyErrorResponse }
+>("auth/getMe", async (_, { rejectWithValue }) => {
+  try {
+    const response = await api.get("/me");
+    return response.data.data.user;
+  } catch (err: unknown) {
+    const errorMessage = getErrorMessage(err);
+    return rejectWithValue(errorMessage);
+  }
+});
 
 export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
@@ -36,8 +41,9 @@ export const logoutUser = createAsyncThunk(
     try {
       await api.post("/user/logout");
       return null;
-    } catch (err: any) {
-      return rejectWithValue("Logout Gagal");
+    } catch (err: unknown) {
+      const errorMessage = getErrorMessage(err);
+      return rejectWithValue(errorMessage);
     }
   },
 );
@@ -50,10 +56,10 @@ interface User {
 }
 
 interface AuthState {
-  user: User | null; // User bisa null atau object User
+  user: User | null;
   isInitialized: boolean;
   loading: boolean;
-  error: any;
+  error: MyErrorResponse | null;
 }
 
 const initialState: AuthState = {
@@ -67,7 +73,6 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    // Reducer manual jika ingin hapus state dari client saja
     resetAuth: (state) => {
       state.user = null;
     },
@@ -82,10 +87,12 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
+        state.isInitialized = true;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload as MyErrorResponse;
+        state.isInitialized = true;
       })
       // Get Me (Cek Session saat Refresh)
       .addCase(getMe.pending, (state) => {
@@ -96,9 +103,10 @@ const authSlice = createSlice({
         state.isInitialized = true;
         state.loading = false;
       })
-      .addCase(getMe.rejected, (state) => {
+      .addCase(getMe.rejected, (state, action) => {
         state.user = null;
         state.isInitialized = true;
+        state.error = action.payload as MyErrorResponse;
         state.loading = false;
       })
       // Logout

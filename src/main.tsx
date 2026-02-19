@@ -6,6 +6,11 @@ import { store } from "./store/index.ts";
 import "./index.css";
 import App from "./App.tsx";
 
+import { registerSW } from 'virtual:pwa-register';
+
+// 2. Registrasikan Service Worker agar aktif otomatis
+registerSW({ immediate: true });
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>

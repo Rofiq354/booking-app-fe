@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface MyErrorResponse {
   code: number;
-  success: boolean;
+  status: string;
   message: string | Record<string, string>;
+  data?: any;
 }
