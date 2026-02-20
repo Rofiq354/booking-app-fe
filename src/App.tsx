@@ -14,6 +14,8 @@ import { Toaster } from "react-hot-toast";
 import LandingPage from "./pages/user/landing-page";
 import UserLayout from "./pages/user";
 import OfflineScreen from "./lib/OffileScreen";
+import FieldsPage from "./pages/user/fields";
+import FieldDetailPage from "./pages/user/fields/detail";
 
 // ── Guard: hanya bisa diakses jika belum login ─────────────────────────────
 // Jika sudah login → redirect sesuai role
@@ -104,6 +106,10 @@ function App() {
         {/* ── User routes ── */}
         <Route path="/" element={<UserLayout />}>
           <Route index element={<LandingPage />} />
+          <Route path="fields">
+            <Route index element={<FieldsPage />} />
+            <Route path=":id" element={<FieldDetailPage />} />
+          </Route>
         </Route>
 
         <Route path="*" element={<div>Halaman Tidak Ditemukan</div>} />

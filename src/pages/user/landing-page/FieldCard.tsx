@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { formatPrice } from "../../../utils/format";
 
 interface FieldCardProps {
   id: number;
@@ -9,12 +10,11 @@ interface FieldCardProps {
   delay?: string;
 }
 
-// Format harga: 150000 → "Rp 150K"
-const formatPrice = (price: number): string => {
-  if (price >= 1_000_000)
-    return `Rp ${(price / 1_000_000).toFixed(price % 1_000_000 === 0 ? 0 : 1)}Jt`;
-  if (price >= 1_000) return `Rp ${Math.round(price / 1_000)}K`;
-  return `Rp ${price}`;
+const getSimulatedRating = (id: string) => {
+  const hash = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const rating = (hash % 11) / 10 + 4; // Menghasilkan angka antara 4.0 - 5.0
+  const reviews = (hash % 80) + 10; // Menghasilkan 10 - 90 ulasan
+  return { rating: rating.toFixed(1), reviews };
 };
 
 const FutsalCourtIcon = () => (
@@ -80,16 +80,17 @@ const FutsalCourtIcon = () => (
 const FieldCard = ({
   id,
   name,
-  description,
   image,
   price,
   delay = "0s",
 }: FieldCardProps) => {
   // image sudah berupa full URL dari Cloudinary
   const imageUrl = image ?? null;
+  const { rating, reviews } = getSimulatedRating(id.toString() || name);
 
   return (
-    <Link to={id.toString()}
+    <Link
+      to={`fields/${id}`}
       className="lp-hover-lift group relative overflow-hidden rounded-2xl border cursor-pointer lp-slide-up"
       style={{
         background: "var(--card)",
@@ -139,59 +140,71 @@ const FieldCard = ({
 
       {/* Card content */}
       <div className="p-5">
-        <div className="mb-3">
-          <h3
-            className="lp-display font-black uppercase italic text-lg leading-none mb-1"
-            style={{ color: "var(--foreground)" }}
-          >
+        <div className="mb-4">
+          {/* Judul: Balikin ke 2xl biar gagah */}
+          <h3 className="font-['Barlow_Condensed'] text-2xl font-black italic uppercase leading-none text-foreground transition-colors group-hover:text-primary mb-2">
             {name}
           </h3>
-          {description && (
-            <p
-              className="text-xs leading-relaxed line-clamp-1"
-              style={{ color: "var(--muted-foreground)" }}
-            >
-              {description}
-            </p>
-          )}
-        </div>
 
-        <div className="flex items-center justify-between">
-          <div>
-            <span
-              className="lp-display font-black italic text-xl"
-              style={{ color: "var(--primary)" }}
-            >
-              {formatPrice(price)}
+          {/* Rating Section: Dibuat Bold & Besar */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center">
+              {[...Array(5)].map((_, i) => (
+                <svg
+                  key={i}
+                  className={`w-4 h-4 ${
+                    // Ukuran icon w-4 (16px) biar jelas
+                    i < Math.floor(Number(rating))
+                      ? "text-warning fill-warning"
+                      : "text-muted fill-muted"
+                  }`}
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              ))}
+            </div>
+
+            {/* Angka Rating: Pake Barlow biar Bold nya mantap */}
+            <span className="font-['Barlow_Condensed'] text-lg font-black italic text-foreground leading-none">
+              {rating}
             </span>
-            <span
-              className="text-xs ml-1"
-              style={{ color: "var(--muted-foreground)" }}
-            >
-              /jam
+
+            <span className="text-muted-foreground text-xs font-bold uppercase tracking-tighter">
+              ({reviews} Ulasan)
             </span>
           </div>
-          <button
-            className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300 group-hover:scale-105"
-            style={{
-              background: "color-mix(in srgb, var(--primary), transparent 88%)",
-              color: "var(--primary)",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background =
-                "var(--primary)";
-              (e.currentTarget as HTMLButtonElement).style.color =
-                "var(--primary-foreground)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background =
-                "color-mix(in srgb, var(--primary), transparent 88%)";
-              (e.currentTarget as HTMLButtonElement).style.color =
-                "var(--primary)";
-            }}
-          >
-            Pesan →
-          </button>
+        </div>
+
+        {/* ── Footer ── */}
+        <div className="mt-auto flex items-center justify-between border-t border-border pt-4">
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+              Harga Mulai
+            </span>
+            <div className="flex items-baseline gap-1">
+              <span className="font-['Barlow_Condensed'] text-2xl font-black italic leading-none text-primary">
+                {formatPrice(price)}
+              </span>
+              <span className="text-xs text-muted-foreground italic">/jam</span>
+            </div>
+          </div>
+
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:rotate-[-45deg]">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </div>
         </div>
       </div>
     </Link>

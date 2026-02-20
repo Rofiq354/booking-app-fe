@@ -85,6 +85,15 @@
   --shadow-md: var(--shadow-md-value);
   --shadow-lg: var(--shadow-lg-value);
   --shadow-card: var(--shadow-card-value);
+
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-muted: var(--primary-muted);
+  --color-primary-glow: var(--primary-glow);
+  --color-primary-bg: var(--primary-bg);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-destructive-border: var(--destructive-border);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-text: var(--warning-text);
 }
 
 /* ============================================================
@@ -112,6 +121,15 @@
   /* ---- Secondary — Green Tint (ringan) ---- */
   --secondary: hsl(142 30% 94%); /* Very light green */
   --secondary-foreground: hsl(142 60% 20%); /* Dark green text */
+
+  --primary-soft: color-mix(in srgb, var(--primary), transparent 88%);
+  --primary-muted: color-mix(in srgb, var(--primary), transparent 85%);
+  --primary-glow: color-mix(in srgb, var(--primary), transparent 55%);
+  --primary-bg: color-mix(in srgb, var(--primary), var(--background) 92%);
+  --destructive-soft: color-mix(in srgb, var(--destructive), transparent 92%);
+  --destructive-border: color-mix(in srgb, var(--destructive), transparent 70%);
+  --warning-soft: color-mix(in srgb, var(--warning), transparent 80%);
+  --warning-text: hsl(38 80% 28%);
 
   /* ---- Muted — Abu netral ---- */
   --muted: hsl(150 10% 96%); /* Light gray */

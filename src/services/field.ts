@@ -53,4 +53,9 @@ export const fieldService = {
     const response = await api.delete<ApiResponse>(`/admin/field/${id}`);
     return response.data;
   },
+
+  getDetailField: async (id: string | number) => {
+    const response = await api.get<ApiResponse>(`/field/${id}`);
+    return response.data;
+  },
 };

@@ -58,7 +58,7 @@ const Navbar: React.FC = () => {
           {/* DESKTOP MENU */}
           <div className="hidden md:flex space-x-1 items-center">
             <NavLink
-              href="/cari"
+              href="/fields"
               icon={<Search size={18} />}
               label="Cari Lapangan"
             />
@@ -67,11 +67,11 @@ const Navbar: React.FC = () => {
               icon={<Calendar size={18} />}
               label="Jadwal Saya"
             />
-            <NavLink
+            {/* <NavLink
               href="/promo"
               icon={<TicketPercent size={18} />}
               label="Promo"
-            />
+            /> */}
 
             <div className="h-8 w-px bg-border mx-4"></div>
 
