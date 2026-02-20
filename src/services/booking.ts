@@ -13,6 +13,7 @@ export interface Booking {
   field: {
     name: string;
     price: number;
+    image?: string | null;
   };
   slot: {
     startTime: string;
@@ -33,6 +34,13 @@ export const bookingService = {
     return response.data;
   },
 
+  // Ambil booking milik user yang sedang login — GET /detail-booking
+  getUserBookings: async (): Promise<ApiResponse<Booking[]>> => {
+    const response = await api.get(`/detail-booking`);
+    return response.data;
+  },
+
+  // Buat booking baru (untuk User)
   createBooking: async (
     fieldId: number,
     slotId: number,
@@ -42,11 +50,19 @@ export const bookingService = {
   },
 
   // Update status booking (misal Konfirmasi Pembayaran)
-  updateBookingStatus: async (
+  approveBooking: async (
     id: number,
     status: string,
   ): Promise<ApiResponse<Booking>> => {
-    const response = await api.patch(`/booking/${id}/status`, { status });
+    const response = await api.patch(`/booking/${id}/approve`, { status });
+    return response.data;
+  },
+
+  rejectBooking: async (
+    id: number,
+    status: string,
+  ): Promise<ApiResponse<Booking>> => {
+    const response = await api.patch(`/booking/${id}/cancel`, { status });
     return response.data;
   },
 };

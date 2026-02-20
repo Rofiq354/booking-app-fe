@@ -63,7 +63,7 @@ const Navbar: React.FC = () => {
               label="Cari Lapangan"
             />
             <NavLink
-              href="/jadwal"
+              href="/booked"
               icon={<Calendar size={18} />}
               label="Jadwal Saya"
             />
@@ -145,7 +145,7 @@ const Navbar: React.FC = () => {
             label="Cari Lapangan"
           />
           <MobileNavLink
-            href="/jadwal"
+            href="/booked"
             icon={<Calendar size={20} />}
             label="Jadwal Saya"
           />

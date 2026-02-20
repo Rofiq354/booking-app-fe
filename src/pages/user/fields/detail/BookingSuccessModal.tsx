@@ -1,6 +1,6 @@
 import { CheckCircle, Mail, X } from "lucide-react";
 import type { Booking } from "../../../../services/booking";
-import { formatPrice, formatTime } from "../../../../types/detail-field";
+import { formatTime, fullFormatPrice } from "../../../../utils/format";
 
 const BookingSuccessModal = ({
   booking,
@@ -43,7 +43,7 @@ const BookingSuccessModal = ({
             },
             {
               label: "Harga",
-              value: formatPrice(booking.field.price),
+              value: fullFormatPrice(booking.field.price),
               highlight: true,
             },
             {

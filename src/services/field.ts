@@ -1,4 +1,5 @@
 import api from "./api";
+import type { TimeSlotResponse } from "./time-slot";
 
 export interface FieldRequest {
   id: number;
@@ -11,7 +12,7 @@ export interface FieldRequest {
 export interface ApiResponse {
   status: string;
   message: string;
-  data: FieldRequest[] | FieldRequest;
+  data: FieldRequest[] | FieldRequest | TimeSlotResponse[] | TimeSlotResponse;
 }
 
 export const fieldService = {

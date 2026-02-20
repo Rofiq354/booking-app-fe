@@ -16,6 +16,7 @@ import UserLayout from "./pages/user";
 import OfflineScreen from "./lib/OffileScreen";
 import FieldsPage from "./pages/user/fields";
 import FieldDetailPage from "./pages/user/fields/detail";
+import UserBookingPage from "./pages/user/booked";
 
 // ── Guard: hanya bisa diakses jika belum login ─────────────────────────────
 // Jika sudah login → redirect sesuai role
@@ -110,6 +111,7 @@ function App() {
             <Route index element={<FieldsPage />} />
             <Route path=":id" element={<FieldDetailPage />} />
           </Route>
+          <Route path="/booked" element={<UserBookingPage />} />
         </Route>
 
         <Route path="*" element={<div>Halaman Tidak Ditemukan</div>} />

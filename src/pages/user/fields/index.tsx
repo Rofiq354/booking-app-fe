@@ -1,17 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { fieldService, type FieldRequest } from "../../../services/field";
+import { fieldService } from "../../../services/field";
 import useDebounce from "../../../hooks/useDebounce";
 import FieldCard, { FieldCardSkeleton } from "./FieldCard";
+import type { TimeSlotResponse } from "../../../services/time-slot";
 
 /* ── Types ───────────────────────────────────────────────────── */
 type SortOption = "default" | "price-asc" | "price-desc" | "slots-desc";
-type FilterOption = "all" | "available" | "unavailable";
-
-const FILTER_CHIPS: { value: FilterOption; label: string }[] = [
-  { value: "all", label: "Semua" },
-  { value: "available", label: "Ada Slot" },
-  { value: "unavailable", label: "Tidak Ada Slot" },
-];
 
 /* ── Components ──────────────────────────────────────────────── */
 
@@ -30,13 +24,12 @@ const EmptyState = ({ query }: { query: string }) => (
 );
 
 const FieldsPage = () => {
-  const [fields, setFields] = useState<FieldRequest[]>([]);
+  const [fields, setFields] = useState<TimeSlotResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortOption>("default");
-  const [filter, setFilter] = useState<FilterOption>("all");
 
   const debouncedSearch = useDebounce(search, 400);
 
@@ -46,7 +39,7 @@ const FieldsPage = () => {
       setError(null);
       const res = await fieldService.getAllFields();
       const data = Array.isArray(res.data) ? res.data : [res.data];
-      setFields(data);
+      setFields(data as TimeSlotResponse[]);
     } catch {
       setError("Gagal memuat data lapangan. Periksa koneksi dan coba lagi.");
     } finally {
@@ -71,12 +64,6 @@ const FieldsPage = () => {
       );
     }
 
-    // Filter Logic
-    if (filter === "available")
-      result = result.filter((f) => (f.slots?.length ?? 0) > 0);
-    if (filter === "unavailable")
-      result = result.filter((f) => (f.slots?.length ?? 0) === 0);
-
     // Sort Logic
     if (sort === "price-asc") result.sort((a, b) => a.price - b.price);
     if (sort === "price-desc") result.sort((a, b) => b.price - a.price);
@@ -84,7 +71,7 @@ const FieldsPage = () => {
       result.sort((a, b) => (b.slots?.length ?? 0) - (a.slots?.length ?? 0));
 
     return result;
-  }, [fields, debouncedSearch, sort, filter]);
+  }, [fields, debouncedSearch, sort]);
 
   const totalSlots = fields.reduce((s, f) => s + (f.slots?.length ?? 0), 0);
   const availableCount = fields.filter(
@@ -203,24 +190,6 @@ const FieldsPage = () => {
               <option value="price-desc">Harga: Termahal</option>
               <option value="slots-desc">Slot: Terbanyak</option>
             </select>
-          </div>
-
-          {/* Filter Chips */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-            {FILTER_CHIPS.map((chip) => (
-              <button
-                key={chip.value}
-                onClick={() => setFilter(chip.value)}
-                className={`whitespace-nowrap px-5 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-widest transition-all
-                  ${
-                    filter === chip.value
-                      ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20"
-                      : "bg-card text-muted-foreground border-border hover:border-primary/50"
-                  }`}
-              >
-                {chip.label}
-              </button>
-            ))}
           </div>
         </div>
       </div>
