@@ -24,7 +24,7 @@ interface ApiResponse<T> {
 
 export const adminService = {
   getAllAdmins: async (): Promise<ApiResponse<AdminUser[]>> => {
-    const response = await api.get(`/admin`);
+    const response = await api.get(`/admin/admin`);
     return response.data;
   },
 

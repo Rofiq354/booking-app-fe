@@ -18,7 +18,7 @@ const FormField = ({
   onSuccess,
   initialData,
 }: FormFieldProps) => {
-  const [form, setForm] = useState<any>({
+  const [form, setForm] = useState<FieldRequest>({
     id: 0,
     name: "",
     description: "",
@@ -54,6 +54,7 @@ const FormField = ({
     }
   };
 
+  // FormField.tsx
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -63,18 +64,29 @@ const FormField = ({
       formData.append("name", form.name);
       formData.append("description", form.description || "");
       formData.append("price", form.price.toString());
+
+      // Hanya append image jika user memilih file baru
       if (form.image instanceof File) {
         formData.append("image", form.image);
       }
 
-      const result = initialData?.id
-        ? await fieldService.updateField(initialData.id, formData)
-        : await fieldService.createField(formData);
+      // Gunakan ID dari initialData atau form
+      const targetId = initialData?.id || form.id;
 
-      if (result.status === "success") {
-        toast.success(result.message);
-        onSuccess();
-        onClose();
+      if (isEdit && targetId) {
+        const result = await fieldService.updateField(targetId, formData);
+        if (result.status === "success") {
+          toast.success(result.message);
+          onSuccess();
+          onClose();
+        }
+      } else {
+        const result = await fieldService.createField(formData);
+        if (result.status === "success") {
+          toast.success(result.message);
+          onSuccess();
+          onClose();
+        }
       }
     } catch (error) {
       const errorData = getErrorMessage(error);
@@ -91,7 +103,7 @@ const FormField = ({
       isOpen={isOpen}
       onClose={onClose}
       title={isEdit ? "Update Data Lapangan" : "Tambah Lapangan Baru"}
-      size="xl" // Pastikan modal kamu mendukung size lebar
+      size="xl"
     >
       <form onSubmit={handleSubmit} className="p-1">
         <div className="flex flex-col lg:flex-row gap-8">

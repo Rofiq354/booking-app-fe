@@ -32,7 +32,7 @@ export const timeSlotService = {
   ) => {
     // Menggunakan generic <ApiResponse<TimeSlotResponse>>
     const response = await api.post<ApiResponse<TimeSlotResponse>>(
-      `/timeslot/${fieldId}`,
+      `/admin/timeslot/${fieldId}`,
       data,
     );
     return response.data;

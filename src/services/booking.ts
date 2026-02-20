@@ -29,7 +29,7 @@ interface ApiResponse<T> {
 export const bookingService = {
   // Ambil semua data booking (untuk Admin)
   getAllBookings: async (): Promise<ApiResponse<Booking[]>> => {
-    const response = await api.get(`/booking`);
+    const response = await api.get(`/admin/booking`);
     return response.data;
   },
 

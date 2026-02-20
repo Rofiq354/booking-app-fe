@@ -1,69 +1,102 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { fieldService, type FieldRequest } from "../../../../services/field";
-import { formatPrice } from "../../../../utils/format";
-
-/* ── Simulasi Helper (Sesuai dengan Card sebelumnya) ── */
-const getSimulatedRating = (id: string | number) => {
-  const hash = String(id)
-    .split("")
-    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const rating = (hash % 11) / 10 + 4;
-  const reviews = (hash % 80) + 10;
-  return { rating: rating.toFixed(1), reviews };
-};
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { fieldService } from "../../../../services/field";
+import { ArrowLeft, MapPin, Clock, CalendarCheck, Star } from "lucide-react";
+import SlotPicker from "./SlotPicker";
+import ReviewSection from "./ReviewSection";
+import {
+  formatPrice,
+  type FieldDetail,
+} from "../../../../types/detail-field";
+import { timeSlotService, type TimeSlot } from "../../../../services/time-slot";
 
 const FieldDetailPage = () => {
   const { id } = useParams<{ id: string }>();
-  const [field, setField] = useState<FieldRequest | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
+  const [field, setField] = useState<FieldDetail | null>(null);
+  const [slots, setSlots] = useState<TimeSlot[]>([]);
+  const [loadingField, setLoadingField] = useState(true);
+  const [loadingSlots, setLoadingSlots] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null);
+
+  // Fetch field detail
   useEffect(() => {
-    const fetchDetail = async () => {
+    const fetchField = async () => {
       try {
-        setLoading(true);
         if (!id) return;
         const res = await fieldService.getDetailField(id);
-        // Response detail biasanya langsung object di dalam res.data
-        setField(res.data as FieldRequest);
-      } catch (err: unknown) {
-        console.log(err);
+        setField(res.data as FieldDetail);
+      } catch (err) {
+        console.error(err);
         setError("Gagal memuat detail lapangan.");
       } finally {
-        setLoading(false);
+        setLoadingField(false);
       }
     };
-    fetchDetail();
+    fetchField();
   }, [id]);
 
-  if (loading)
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center animate-pulse font-['Barlow_Condensed'] text-2xl italic font-black text-muted-foreground uppercase tracking-widest">
-        Memuat Lapangan...
-      </div>
-    );
-  if (error || !field)
+  // Fetch slots terpisah dari timeSlotService
+  useEffect(() => {
+    const fetchSlots = async () => {
+      try {
+        if (!id) return;
+        const res = await timeSlotService.getSlots(Number(id));
+        setSlots(res.data.slots ?? []);
+      } catch (err) {
+        console.error(err);
+        setSlots([]);
+      } finally {
+        setLoadingSlots(false);
+      }
+    };
+    fetchSlots();
+  }, [id]);
+
+  const handleSelectSlot = (slotId: number) => {
+    // Toggle: klik slot yang sudah dipilih → deselect
+    setSelectedSlotId((prev) => (prev === slotId ? null : slotId));
+  };
+
+  if (loadingField) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
+        <div className="w-12 h-12 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+        <p className="text-sm font-semibold text-muted-foreground animate-pulse">
+          Memuat lapangan...
+        </p>
+      </div>
+    );
+  }
+
+  if (error || !field) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
+        <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center text-2xl">
+          ⚠️
+        </div>
         <p className="text-destructive font-bold">
           {error || "Lapangan tidak ditemukan"}
         </p>
         <Link
-          to="/lapangan"
-          className="px-6 py-2 bg-primary text-white rounded-full"
+          to="/fields"
+          className="px-6 py-2.5 bg-primary text-primary-foreground rounded-full text-sm font-semibold hover:bg-primary/90 transition-colors"
         >
-          Kembali
+          Kembali ke Daftar
         </Link>
       </div>
     );
+  }
 
-  const { rating, reviews } = getSimulatedRating(field.id);
+  const availableSlots = slots.filter((s) => !s.booked).length;
+  const selectedSlot = slots.find((s) => s.id === selectedSlotId);
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      {/* ── Hero Section ── */}
-      <div className="relative h-[50vh] md:h-[65vh] w-full overflow-hidden">
+    <div className="min-h-screen bg-background pb-24">
+      {/* ── Hero Image ───────────────────────────────────────── */}
+      <div className="relative h-[45vh] md:h-[60vh] w-full overflow-hidden">
         {field.image ? (
           <img
             src={field.image}
@@ -71,132 +104,214 @@ const FieldDetailPage = () => {
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-muted flex items-center justify-center text-primary/20">
-            <span className="text-9xl">🏟️</span>
+          <div className="w-full h-full bg-muted flex items-center justify-center">
+            <span className="text-8xl opacity-20">🏟️</span>
           </div>
         )}
-        {/* Overlay agar text putih terbaca */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
 
-        {/* Back Button */}
-        <Link
-          to="/fields"
-          className="absolute top-6 left-6 glass p-3 rounded-full hover:scale-110 transition-transform"
+        {/* Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+
+        {/* Back */}
+        <button
+          onClick={() => navigate(-1)}
+          className="glass absolute top-5 left-5 flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold hover:scale-105 transition-transform"
         >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="3"
+          <ArrowLeft size={16} />
+          <span className="hidden sm:inline">Kembali</span>
+        </button>
+
+        {/* Status badge */}
+        <div className="absolute top-5 right-5">
+          <span
+            className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border
+            ${availableSlots > 0 ? "badge-available" : "badge-booked"}`}
           >
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
-        </Link>
+            {availableSlots > 0
+              ? `● ${availableSlots} Slot Tersedia`
+              : "● Penuh"}
+          </span>
+        </div>
       </div>
 
-      {/* ── Content Section ── */}
-      <div className="max-w-7xl mx-auto px-6 -mt-32 relative z-10">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Info Utama (Kiri) */}
+      {/* ── Main Content ─────────────────────────────────────── */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-24 relative z-10">
+        <div className="grid lg:grid-cols-3 gap-6 lg:gap-8 items-start">
+          {/* ── LEFT: Info + Slots + Reviews ── */}
           <div className="lg:col-span-2 space-y-8">
+            {/* Header */}
             <div className="space-y-4">
+              <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-foreground leading-[1.05]">
+                {field.name}
+              </h1>
+
+              {/* Meta pills */}
               <div className="flex flex-wrap items-center gap-3">
-                <span
-                  className={`px-4 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest glass ${field.slots && field.slots.length > 0 ? "badge-available" : "badge-booked"}`}
-                >
-                  {field.slots && field.slots.length > 0
-                    ? "Tersedia Hari Ini"
-                    : "Penuh"}
-                </span>
-                <div className="flex items-center gap-1.5 bg-card/50 px-3 py-1.5 rounded-full border border-border">
-                  <span className="text-warning text-sm">★</span>
-                  <span className="text-xs font-bold">{rating}</span>
-                  <span className="text-[10px] text-muted-foreground">
-                    ({reviews} Ulasan)
+                <div className="flex items-center gap-1.5 bg-card border border-border rounded-full px-3 py-1.5">
+                  <Star size={13} className="text-warning fill-warning" />
+                  <span className="text-sm font-black text-foreground">
+                    {field.ratingStats.average.toFixed(1)}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    ({field.ratingStats.total} ulasan)
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1.5 bg-card border border-border rounded-full px-3 py-1.5">
+                  <Clock size={13} className="text-primary" />
+                  <span className="text-xs font-semibold text-foreground">
+                    {loadingSlots
+                      ? "Memuat slot..."
+                      : `${availableSlots} slot tersedia`}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1.5 bg-card border border-border rounded-full px-3 py-1.5">
+                  <MapPin size={13} className="text-muted-foreground" />
+                  <span className="text-xs font-semibold text-foreground">
+                    Jakarta
                   </span>
                 </div>
               </div>
 
-              <h1 className="font-['Barlow_Condensed'] text-5xl md:text-7xl font-black italic uppercase leading-[0.9] text-foreground">
-                {field.name}
-              </h1>
-
-              <p className="text-muted-foreground text-lg leading-relaxed max-w-3xl">
-                {field.description || "Tidak ada deskripsi untuk lapangan ini."}
-              </p>
-            </div>
-
-            {/* Fasilitas (Dummy) */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {["Lantai Interlock", "Lampu LED", "Kantin", "Parkir Luas"].map(
-                (feat) => (
-                  <div
-                    key={feat}
-                    className="flex items-center gap-3 p-4 rounded-2xl border border-border bg-card/30 backdrop-blur-sm"
-                  >
-                    <div className="h-2 w-2 rounded-full bg-primary" />
-                    <span className="text-xs font-bold uppercase tracking-tight">
-                      {feat}
-                    </span>
-                  </div>
-                ),
+              {field.description && (
+                <p className="text-muted-foreground text-base leading-relaxed">
+                  {field.description}
+                </p>
               )}
             </div>
+
+            <div className="h-px bg-border" />
+
+            {/* Slot Picker */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <CalendarCheck size={18} className="text-primary" />
+                <h2 className="text-lg font-black tracking-tight text-foreground">
+                  Pilih Waktu Booking
+                </h2>
+              </div>
+              <SlotPicker
+                slots={slots}
+                selectedSlotId={selectedSlotId}
+                onSelect={handleSelectSlot}
+                loading={loadingSlots}
+              />
+            </div>
+
+            <div className="h-px bg-border" />
+
+            {/* Reviews */}
+            <ReviewSection
+              reviews={field.reviews}
+              ratingStats={field.ratingStats}
+            />
           </div>
 
-          {/* Sidebar Booking (Kanan) */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-24 glass p-8 rounded-3xl border border-border shadow-2xl space-y-6">
+          {/* ── RIGHT: Sticky Booking Card ── */}
+          <div className="lg:col-span-1 order-first lg:order-last">
+            <div className="sticky top-6 glass rounded-3xl border border-border p-6 space-y-6">
+              {/* Harga */}
               <div>
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
                   Biaya Sewa
                 </span>
                 <div className="flex items-baseline gap-2 mt-1">
-                  <span className="font-['Barlow_Condensed'] text-5xl font-black italic text-primary leading-none">
+                  <span className="text-4xl font-black text-primary leading-none">
                     {formatPrice(field.price)}
                   </span>
-                  <span className="text-muted-foreground italic font-medium">
-                    /jam
+                  <span className="text-muted-foreground text-sm">/jam</span>
+                </div>
+              </div>
+
+              <div className="h-px bg-border" />
+
+              {/* Info */}
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground font-medium">
+                    Rating
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <Star size={13} className="text-warning fill-warning" />
+                    <span className="font-bold text-foreground">
+                      {field.ratingStats.average.toFixed(1)}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground font-medium">
+                    Total Slot
+                  </span>
+                  <span className="font-bold text-foreground">
+                    {loadingSlots ? "—" : `${slots.length} slot`}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground font-medium">
+                    Tersedia
+                  </span>
+                  <span
+                    className={`font-bold ${availableSlots > 0 ? "text-primary" : "text-destructive"}`}
+                  >
+                    {loadingSlots ? "—" : `${availableSlots} slot`}
                   </span>
                 </div>
               </div>
 
-              <div className="h-[1px] w-full bg-border" />
+              {/* Slot terpilih preview */}
+              {selectedSlot && (
+                <>
+                  <div className="h-px bg-border" />
+                  <div className="flex flex-col gap-1 p-3 rounded-xl bg-primary/10 border border-primary/20">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-primary/70">
+                      Slot Dipilih
+                    </span>
+                    <span className="text-sm font-black text-primary">
+                      {new Date(selectedSlot.startTime).toLocaleTimeString(
+                        "id-ID",
+                        {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          timeZone: "Asia/Jakarta",
+                        },
+                      )}
+                      {" – "}
+                      {new Date(selectedSlot.endTime).toLocaleTimeString(
+                        "id-ID",
+                        {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          timeZone: "Asia/Jakarta",
+                        },
+                      )}{" "}
+                      WIB
+                    </span>
+                    <span className="text-xs font-semibold text-primary/80">
+                      Total: {formatPrice(field.price)}
+                    </span>
+                  </div>
+                </>
+              )}
 
-              <div className="space-y-4">
-                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  Status Jadwal
-                </p>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-foreground/70 font-medium">
-                    Total Slot Aktif
-                  </span>
-                  <span className="font-black italic text-primary">
-                    {field.slots?.length || 0} Slot
-                  </span>
-                </div>
-              </div>
+              <div className="h-px bg-border" />
 
-              <button className="w-full py-5 rounded-2xl bg-primary text-primary-foreground font-['Barlow_Condensed'] text-xl font-black italic uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group">
-                Booking Sekarang
-                <svg
-                  className="group-hover:translate-x-1 transition-transform"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                >
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
+              {/* CTA */}
+              <button
+                disabled={!selectedSlotId}
+                className={`w-full py-4 rounded-2xl font-black text-base uppercase tracking-wide transition-all duration-200 flex items-center justify-center gap-3
+                  ${
+                    selectedSlotId
+                      ? "bg-primary text-primary-foreground hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+                      : "bg-muted text-muted-foreground cursor-not-allowed"
+                  }`}
+              >
+                <CalendarCheck size={18} />
+                {selectedSlotId ? "Booking Sekarang" : "Pilih Slot Dulu"}
               </button>
 
-              <p className="text-[10px] text-center text-muted-foreground font-medium uppercase leading-tight">
-                Konfirmasi instan setelah pembayaran berhasil dilakukan via
-                Midtrans
+              <p className="text-[10px] text-center text-muted-foreground leading-tight">
+                Konfirmasi instan setelah pembayaran via Midtrans
               </p>
             </div>
           </div>
