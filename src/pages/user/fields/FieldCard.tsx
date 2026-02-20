@@ -1,15 +1,6 @@
 import { Link } from "react-router-dom";
-import type { FieldRequest } from "../../../services/field";
 import { formatPrice } from "../../../utils/format";
-
-/* ── Simulasi Rating Helper ─────────────────────────────────── */
-// Fungsi ini menghasilkan rating konsisten berdasarkan string ID
-const getSimulatedRating = (id: string) => {
-  const hash = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const rating = (hash % 11) / 10 + 4; // Menghasilkan angka antara 4.0 - 5.0
-  const reviews = (hash % 80) + 10; // Menghasilkan 10 - 90 ulasan
-  return { rating: rating.toFixed(1), reviews };
-};
+import type { TimeSlotResponse } from "../../../services/time-slot";
 
 /* ── Fallback Court Icon ─────────────────────────────────────── */
 const CourtIcon = () => (
@@ -66,14 +57,11 @@ const FieldCard = ({
   field,
   delay = "0s",
 }: {
-  field: FieldRequest;
+  field: TimeSlotResponse;
   delay: string;
 }) => {
   const slots = field.slots ?? [];
   const slotCount = slots.length;
-  const { rating, reviews } = getSimulatedRating(
-    field.id.toString() || field.name,
-  );
 
   const badge =
     slotCount === 0
@@ -138,7 +126,7 @@ const FieldCard = ({
                   key={i}
                   className={`w-4 h-4 ${
                     // Ukuran icon w-4 (16px) biar jelas
-                    i < Math.floor(Number(rating))
+                    i < Math.floor(Number(field.averageRating))
                       ? "text-warning fill-warning"
                       : "text-muted fill-muted"
                   }`}
@@ -151,11 +139,11 @@ const FieldCard = ({
 
             {/* Angka Rating: Pake Barlow biar Bold nya mantap */}
             <span className="font-['Barlow_Condensed'] text-lg font-black italic text-foreground leading-none">
-              {rating}
+              {field.averageRating}
             </span>
 
             <span className="text-muted-foreground text-xs font-bold uppercase tracking-tighter">
-              ({reviews} Ulasan)
+              ({field.totalReviews} Ulasan)
             </span>
           </div>
         </div>

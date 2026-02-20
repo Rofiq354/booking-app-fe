@@ -5,7 +5,6 @@ import { timeSlotService, type TimeSlot } from "../../../../services/time-slot";
 import { bookingService, type Booking } from "../../../../services/booking";
 import {
   ArrowLeft,
-  MapPin,
   Clock,
   CalendarCheck,
   Star,
@@ -342,12 +341,6 @@ const FieldDetailPage = () => {
                     {loadingSlots
                       ? "Memuat slot..."
                       : `${availableSlots} slot tersedia`}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5 bg-card border border-border rounded-full px-3 py-1.5">
-                  <MapPin size={13} className="text-muted-foreground" />
-                  <span className="text-xs font-semibold text-foreground">
-                    Jakarta
                   </span>
                 </div>
               </div>

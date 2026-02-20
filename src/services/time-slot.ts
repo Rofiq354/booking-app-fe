@@ -15,7 +15,10 @@ export interface TimeSlotResponse extends FieldRequest {
   name: string;
   description: string | null;
   price: number;
+  image: string | null;
   slots: TimeSlot[];
+  averageRating: number;
+  totalReviews: number;
 }
 
 export interface ApiResponse<T> {

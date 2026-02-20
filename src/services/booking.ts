@@ -8,7 +8,7 @@ export interface Booking {
   paymentProof?: string;
   user: {
     name: string;
-    email: string;
+    email?: string;
   };
   field: {
     name: string;
@@ -58,11 +58,19 @@ export const bookingService = {
     return response.data;
   },
 
-  rejectBooking: async (
+  cancleBookingUser: async (
     id: number,
     status: string,
   ): Promise<ApiResponse<Booking>> => {
     const response = await api.patch(`/booking/${id}/cancel`, { status });
+    return response.data;
+  },
+
+  rejectBooking: async (
+    id: number,
+    status: string,
+  ): Promise<ApiResponse<Booking>> => {
+    const response = await api.patch(`/admin/booking/${id}/cancel`, { status });
     return response.data;
   },
 };

@@ -12,7 +12,14 @@ export const formatTime = (iso: string) =>
     timeZone: "Asia/Jakarta",
   }) + " WIB";
 
-  
+export const formatDate = (iso: string) =>
+  new Date(iso).toLocaleDateString("id-ID", {
+    weekday: "short",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
 export const fullFormatPrice = (price: number) =>
   new Intl.NumberFormat("id-ID", {
     style: "currency",
