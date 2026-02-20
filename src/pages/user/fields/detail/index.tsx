@@ -6,20 +6,29 @@ import SlotPicker from "./SlotPicker";
 import ReviewSection from "./ReviewSection";
 import {
   formatPrice,
+  formatTime,
   type FieldDetail,
 } from "../../../../types/detail-field";
 import { timeSlotService, type TimeSlot } from "../../../../services/time-slot";
+import { bookingService, type Booking } from "../../../../services/booking";
+import toast from "react-hot-toast";
+import BookingSuccessModal from "./BookingSuccessModal";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../store";
 
 const FieldDetailPage = () => {
   const { id } = useParams<{ id: string }>();
+  const { user } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
 
   const [field, setField] = useState<FieldDetail | null>(null);
   const [slots, setSlots] = useState<TimeSlot[]>([]);
   const [loadingField, setLoadingField] = useState(true);
   const [loadingSlots, setLoadingSlots] = useState(true);
+  const [bookingLoading, setBookingLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null);
+  const [successBooking, setSuccessBooking] = useState<Booking | null>(null);
 
   // Fetch field detail
   useEffect(() => {
@@ -56,8 +65,35 @@ const FieldDetailPage = () => {
   }, [id]);
 
   const handleSelectSlot = (slotId: number) => {
-    // Toggle: klik slot yang sudah dipilih → deselect
     setSelectedSlotId((prev) => (prev === slotId ? null : slotId));
+  };
+
+  const handleBooking = async () => {
+    if (!selectedSlotId || !field) return;
+
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    setBookingLoading(true);
+    try {
+      const res = await bookingService.createBooking(field.id, selectedSlotId);
+      setSuccessBooking(res.data);
+
+      // Refresh slots agar slot yang baru dibooking langsung disabled
+      const refreshed = await timeSlotService.getSlots(field.id);
+      setSlots(refreshed.data.slots ?? []);
+      setSelectedSlotId(null);
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { message?: string } } };
+      const msg =
+        axiosErr?.response?.data?.message ??
+        "Gagal membuat booking, coba lagi.";
+      toast.error(msg);
+    } finally {
+      setBookingLoading(false);
+    }
   };
 
   if (loadingField) {
@@ -95,6 +131,13 @@ const FieldDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
+      {/* Modal sukses */}
+      {successBooking && (
+        <BookingSuccessModal
+          booking={successBooking}
+          onClose={() => setSuccessBooking(null)}
+        />
+      )}
       {/* ── Hero Image ───────────────────────────────────────── */}
       <div className="relative h-[45vh] md:h-[60vh] w-full overflow-hidden">
         {field.image ? (
@@ -211,7 +254,6 @@ const FieldDetailPage = () => {
           {/* ── RIGHT: Sticky Booking Card ── */}
           <div className="lg:col-span-1 order-first lg:order-last">
             <div className="sticky top-6 glass rounded-3xl border border-border p-6 space-y-6">
-              {/* Harga */}
               <div>
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
                   Biaya Sewa
@@ -226,7 +268,6 @@ const FieldDetailPage = () => {
 
               <div className="h-px bg-border" />
 
-              {/* Info */}
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground font-medium">
@@ -268,24 +309,8 @@ const FieldDetailPage = () => {
                       Slot Dipilih
                     </span>
                     <span className="text-sm font-black text-primary">
-                      {new Date(selectedSlot.startTime).toLocaleTimeString(
-                        "id-ID",
-                        {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          timeZone: "Asia/Jakarta",
-                        },
-                      )}
-                      {" – "}
-                      {new Date(selectedSlot.endTime).toLocaleTimeString(
-                        "id-ID",
-                        {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          timeZone: "Asia/Jakarta",
-                        },
-                      )}{" "}
-                      WIB
+                      {formatTime(selectedSlot.startTime)} –{" "}
+                      {formatTime(selectedSlot.endTime)}
                     </span>
                     <span className="text-xs font-semibold text-primary/80">
                       Total: {formatPrice(field.price)}
@@ -296,18 +321,28 @@ const FieldDetailPage = () => {
 
               <div className="h-px bg-border" />
 
-              {/* CTA */}
+              {/* Tombol Booking */}
               <button
-                disabled={!selectedSlotId}
+                onClick={handleBooking}
+                disabled={!selectedSlotId || bookingLoading}
                 className={`w-full py-4 rounded-2xl font-black text-base uppercase tracking-wide transition-all duration-200 flex items-center justify-center gap-3
                   ${
-                    selectedSlotId
+                    selectedSlotId && !bookingLoading
                       ? "bg-primary text-primary-foreground hover:scale-[1.02] active:scale-[0.98] shadow-lg"
                       : "bg-muted text-muted-foreground cursor-not-allowed"
                   }`}
               >
-                <CalendarCheck size={18} />
-                {selectedSlotId ? "Booking Sekarang" : "Pilih Slot Dulu"}
+                {bookingLoading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-muted-foreground/30 border-t-muted-foreground rounded-full animate-spin" />
+                    <span>Memproses...</span>
+                  </>
+                ) : (
+                  <>
+                    <CalendarCheck size={18} />
+                    {selectedSlotId ? "Booking Sekarang" : "Pilih Slot Dulu"}
+                  </>
+                )}
               </button>
 
               <p className="text-[10px] text-center text-muted-foreground leading-tight">
