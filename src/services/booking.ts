@@ -54,7 +54,9 @@ export const bookingService = {
     id: number,
     status: string,
   ): Promise<ApiResponse<Booking>> => {
-    const response = await api.patch(`/booking/${id}/approve`, { status });
+    const response = await api.patch(`/admin/booking/${id}/approve`, {
+      status,
+    });
     return response.data;
   },
 

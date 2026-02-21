@@ -88,13 +88,13 @@ const DetailSlotModal = ({
           </button>
         </div>
 
-        {/* Navigation Tabs - Modern Pill Style */}
+        {/* Navigation Tabs */}
         <div className="space-y-3">
           <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
             <CalendarDays size={14} className="text-primary" />
             Pilih Tanggal Operasional
           </label>
-          <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
+          <div className="flex gap-3 overflow-x-auto pb-2">
             {dates.length > 0
               ? dates.map((date) => {
                   const d = new Date(date);
@@ -135,14 +135,14 @@ const DetailSlotModal = ({
           </div>
         </div>
 
-        {/* Slot Grid Section */}
+        {/* Slot Grid */}
         <div className="space-y-3">
           <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
             <Clock size={14} className="text-primary" />
             Sesi Waktu Terdaftar
           </label>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[350px] overflow-y-auto pr-2">
             {loading
               ? Array.from({ length: 8 }).map((_, i) => (
                   <div
@@ -152,19 +152,29 @@ const DetailSlotModal = ({
                 ))
               : activeTab
                 ? groupedSlots[activeTab]?.map((slot: TimeSlot) => {
+                    const isPending = !slot.booked && !!slot.bookingId;
                     const isBooked = slot.booked;
+
                     return (
                       <div
                         key={slot.id}
-                        className={`relative p-4 rounded-2xl border transition-all duration-200 group ${
+                        className={`relative p-4 rounded-2xl border transition-all duration-200 ${
                           isBooked
                             ? "bg-destructive/5 border-destructive/20"
-                            : "bg-card border-border hover:border-primary hover:shadow-md"
+                            : isPending
+                              ? "bg-amber-50 border-amber-200"
+                              : "bg-card border-border hover:border-primary hover:shadow-md"
                         }`}
                       >
                         <div className="flex flex-col items-center gap-2 text-center">
                           <p
-                            className={`text-sm font-black tracking-tight ${isBooked ? "text-destructive" : "text-foreground"}`}
+                            className={`text-sm font-black tracking-tight ${
+                              isBooked
+                                ? "text-destructive"
+                                : isPending
+                                  ? "text-amber-600"
+                                  : "text-foreground"
+                            }`}
                           >
                             {new Date(slot.startTime).toLocaleTimeString(
                               "id-ID",
@@ -176,15 +186,29 @@ const DetailSlotModal = ({
                           </p>
                           <div
                             className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest shadow-sm ${
-                              isBooked ? "badge-booked" : "badge-available"
+                              isBooked
+                                ? "badge-booked"
+                                : isPending
+                                  ? "badge-pending"
+                                  : "badge-available"
                             }`}
                           >
-                            {isBooked ? "Terisi" : "Tersedia"}
+                            {isBooked
+                              ? "Terisi"
+                              : isPending
+                                ? "Pending"
+                                : "Tersedia"}
                           </div>
                         </div>
-                        {/* Status Indicator Dot */}
+                        {/* Status dot */}
                         <div
-                          className={`absolute top-2 right-2 w-1.5 h-1.5 rounded-full ${isBooked ? "bg-destructive animate-pulse" : "bg-primary"}`}
+                          className={`absolute top-2 right-2 w-1.5 h-1.5 rounded-full ${
+                            isBooked
+                              ? "bg-destructive animate-pulse"
+                              : isPending
+                                ? "bg-amber-400 animate-pulse"
+                                : "bg-primary"
+                          }`}
                         />
                       </div>
                     );
@@ -193,7 +217,7 @@ const DetailSlotModal = ({
           </div>
         </div>
 
-        {/* Footer Action */}
+        {/* Footer */}
         <div className="flex justify-end pt-4 border-t border-border">
           <button
             onClick={onClose}

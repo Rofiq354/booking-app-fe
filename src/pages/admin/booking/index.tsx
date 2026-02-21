@@ -1,21 +1,20 @@
 import toast, { Toaster } from "react-hot-toast";
 import DataTable from "../../../components/DataTable";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import BookingDetailModal from "./BookingDetailModal";
 import { bookingService, type Booking } from "../../../services/booking";
 import { getErrorMessage } from "../../../utils/error";
+import BookingDetailSidebar from "./DetailBooking";
 
 const BookingPage = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   const fetchBookings = useCallback(async (isSilent = false) => {
     if (!isSilent) setIsInitialLoad(true);
     try {
       const res = await bookingService.getAllBookings();
-      console.log(res);
       setBookings(res.data);
     } catch (error) {
       const errorData = getErrorMessage(error);
@@ -39,9 +38,8 @@ const BookingPage = () => {
     ).length;
 
     const totalIncome = bookings
-      .filter((b) => b.status === "CONFIRMED") // Sesuaikan status yang dianggap masuk uang
+      .filter((b) => b.status === "CONFIRMED")
       .reduce((sum, b) => {
-        // Tambahkan pengecekan agar tidak error jika field belum keload
         const price = b.field?.price || 0;
         return sum + price;
       }, 0);
@@ -49,42 +47,35 @@ const BookingPage = () => {
     return { totalReservations, pendingConfirmation, totalIncome };
   }, [bookings]);
 
-  // const handleViewDetail = (booking: Booking) => {
-  //   setSelectedBooking(booking);
-  //   setIsDetailModalOpen(true);
-  // };
-
-  // const handleConfirm = (id: string) => {
-  //   setBookings((prev) =>
-  //     prev.map((b) => (b.id === id ? { ...b, status: "CONFIRMED" } : b)),
-  //   );
-  //   toast.success(`Booking ${id} berhasil dikonfirmasi!`);
-  // };
+  const handleOpenDetail = (booking: Booking) => {
+    setSelectedBooking(booking);
+    setIsSidebarOpen(true);
+  };
 
   const columns = [
     {
       header: "ID & Pelanggan",
       render: (item: Booking) => (
-        <div className="flex flex-col">
-          {/* ID Booking */}
-          <span className="text-[10px] font-mono font-bold text-slate-400 uppercase">
+        <div
+          className="flex flex-col cursor-pointer hover:opacity-70 transition-opacity"
+          onClick={() => handleOpenDetail(item)}
+        >
+          <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase">
             #BK-{item.id.toString().padStart(4, "0")}
           </span>
-          {/* Data dari item.user */}
-          <span className="font-bold text-slate-800">
+          <span className="font-bold text-foreground">
             {item.user?.name || "N/A"}
           </span>
-          <span className="text-[11px] text-slate-400 lowercase">
+          <span className="text-[11px] text-muted-foreground lowercase">
             {item.user?.email}
           </span>
         </div>
       ),
     },
     {
-      header: "Detail Lapangan",
+      header: "Lapangan",
       render: (item: Booking) => (
         <div className="flex flex-col">
-          {/* Data dari item.field */}
           <span className="text-sm font-semibold text-indigo-600">
             {item.field?.name}
           </span>
@@ -98,13 +89,12 @@ const BookingPage = () => {
       header: "Jadwal Main",
       render: (item: Booking) => (
         <div className="flex flex-col">
-          {/* Data dari item.slot */}
           <span className="text-sm font-bold text-slate-700">
             {new Date(item.slot?.startTime).toLocaleTimeString("id-ID", {
               hour: "2-digit",
               minute: "2-digit",
             })}{" "}
-            -
+            -{" "}
             {new Date(item.slot?.endTime).toLocaleTimeString("id-ID", {
               hour: "2-digit",
               minute: "2-digit",
@@ -152,7 +142,6 @@ const BookingPage = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {/* Total Reservasi */}
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 transition-all hover:shadow-md">
           <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">
             Total Reservasi
@@ -162,7 +151,6 @@ const BookingPage = () => {
           </p>
         </div>
 
-        {/* Menunggu Konfirmasi */}
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 transition-all hover:shadow-md">
           <p className="text-amber-500 text-[10px] font-bold uppercase tracking-widest mb-1">
             Menunggu Konfirmasi
@@ -177,7 +165,6 @@ const BookingPage = () => {
           </div>
         </div>
 
-        {/* Pendapatan */}
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 transition-all hover:shadow-md">
           <p className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest mb-1">
             Total Pendapatan
@@ -190,14 +177,22 @@ const BookingPage = () => {
 
       <DataTable columns={columns} data={bookings} isLoading={isInitialLoad} />
 
-      <BookingDetailModal
-        isOpen={isDetailModalOpen}
-        onClose={() => {
-          setIsDetailModalOpen(false);
-          setSelectedBooking(null);
-        }}
+      <BookingDetailSidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
         booking={selectedBooking}
-        onConfirm={() => console.log("fitur belum ada")}
+        onConfirm={async (id) => {
+          await bookingService.approveBooking(Number(id), "CONFIRMED");
+          toast.success("Booking berhasil dikonfirmasi!");
+          fetchBookings(true);
+          setIsSidebarOpen(false);
+        }}
+        onReject={async (id) => {
+          await bookingService.rejectBooking(Number(id), "CANCELLED");
+          toast.success("Booking berhasil ditolak.");
+          fetchBookings(true);
+          setIsSidebarOpen(false);
+        }}
       />
     </div>
   );
