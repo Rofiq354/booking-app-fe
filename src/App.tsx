@@ -4,7 +4,7 @@ import AdminLayout from "./pages/admin";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import FieldPage from "./pages/admin/field";
-import Dashboard from "./pages/admin/dashboard";
+import DashboardPage from "./pages/admin/dashboard";
 import { useSelector } from "react-redux";
 import BookingPage from "./pages/admin/booking";
 import SetAdminPage from "./pages/admin/set-admin";
@@ -98,7 +98,7 @@ function App() {
             </AdminRoute>
           }
         >
-          <Route index element={<Dashboard />} />
+          <Route index element={<DashboardPage />} />
           <Route path="field" element={<FieldPage />} />
           <Route path="data-booking" element={<BookingPage />} />
           <Route path="data-admin" element={<SetAdminPage />} />
