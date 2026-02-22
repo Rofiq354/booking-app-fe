@@ -7,9 +7,9 @@ export interface FieldRequest {
   description: string | null;
   image: string | null | File;
   price: number;
-  slots: TimeSlot[];
-  averageRating: number;
-  totalReviews: number;
+  slots?: TimeSlot[];
+  averageRating?: number;
+  totalReviews?: number;
 }
 
 export interface ApiResponse {
