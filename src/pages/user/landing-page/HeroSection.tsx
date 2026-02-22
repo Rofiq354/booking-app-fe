@@ -1,18 +1,32 @@
 import { Link } from "react-router-dom";
+import { useFieldStats } from "../../../hooks/useFieldStats";
 
 const HeroSection = () => {
+  const {
+    slotsToday,
+    lastBooking,
+    globalRating,
+    avatars,
+    totalPlayers,
+    loading,
+  } = useFieldStats();
+
+  const avatarColors = [
+    "var(--primary)",
+    "hsl(162 70% 38%)",
+    "hsl(38 92% 50%)",
+    "hsl(199 89% 48%)",
+  ];
+
   return (
-    <section
-      className="lp-hero-clip relative min-h-screen flex items-center pb-28 overflow-hidden"
-      style={{ background: "var(--background)" }}
-    >
+    <section className="lp-hero-clip relative bg-background min-h-screen flex items-center pb-28 overflow-hidden">
       {/* Grid background */}
       <div className="lp-bg-grid absolute inset-0 pointer-events-none" />
 
       {/* Radial glow blobs */}
       <div className="absolute inset-0 pointer-events-none">
         <div
-          className="absolute top-1/3 left-1/3 w-[520px] h-[520px] rounded-full"
+          className="absolute top-1/3 left-1/3 w-130 h-130 rounded-full"
           style={{
             background:
               "radial-gradient(circle, color-mix(in srgb, var(--primary), transparent 88%) 0%, transparent 70%)",
@@ -20,7 +34,7 @@ const HeroSection = () => {
           }}
         />
         <div
-          className="absolute bottom-1/4 right-1/4 w-[380px] h-[380px] rounded-full"
+          className="absolute bottom-1/4 right-1/4 w-95 h-95 rounded-full"
           style={{
             background:
               "radial-gradient(circle, color-mix(in srgb, hsl(162 90% 35%), transparent 90%) 0%, transparent 70%)",
@@ -84,18 +98,12 @@ const HeroSection = () => {
           {/* LEFT: Copy */}
           <div className="flex-1 max-w-2xl">
             <div className="lp-label lp-slide-up mb-6 flex items-center gap-3">
-              <span
-                className="w-8 h-px"
-                style={{ background: "var(--primary)" }}
-              />
+              <span className="w-8 h-px bg-primary" />
               Platform Futsal #1 Indonesia
             </div>
 
             <h1 className="lp-display font-black uppercase leading-none mb-6">
-              <div
-                className="lp-slide-up-1 text-6xl md:text-8xl xl:text-[7rem] tracking-tight"
-                style={{ color: "var(--foreground)" }}
-              >
+              <div className="lp-slide-up-1 text-foreground text-6xl md:text-8xl xl:text-[7rem] tracking-tight">
                 MAIN
               </div>
               <div className="lp-slide-up-2 flex items-baseline">
@@ -103,10 +111,7 @@ const HeroSection = () => {
                   FUTSAL
                 </span>
               </div>
-              <div
-                className="lp-slide-up-3 text-6xl md:text-8xl xl:text-[7rem] tracking-tight"
-                style={{ color: "var(--primary)" }}
-              >
+              <div className="lp-slide-up-3 text-6xl md:text-8xl xl:text-[7rem] tracking-tight text-primary">
                 SEKARANG.
               </div>
             </h1>
@@ -121,28 +126,23 @@ const HeroSection = () => {
 
             <div className="lp-slide-up-4 flex flex-wrap gap-4">
               <Link
-                to="/cari"
-                className="lp-display lp-cta-glow font-black text-lg uppercase italic tracking-widest px-10 py-5 rounded-2xl transition-all duration-300"
+                to="/fields"
+                className="lp-display text-primary-foreground lp-cta-glow font-black text-lg uppercase italic tracking-widest px-10 py-5 rounded-2xl transition-all duration-300"
                 style={{
                   background:
                     "linear-gradient(135deg, var(--primary), hsl(162 90% 35%))",
-                  color: "var(--primary-foreground)",
                 }}
               >
                 Booking Sekarang →
               </Link>
               <Link
-                to="/cari"
-                className="lp-display font-black text-lg uppercase italic tracking-widest px-10 py-5 rounded-2xl border-2 transition-all duration-300"
-                style={{
-                  borderColor: "var(--border)",
-                  color: "var(--muted-foreground)",
-                }}
+                to="/fields"
+                className="lp-display border-border text-muted-foreground font-black text-lg uppercase italic tracking-widest px-10 py-5 rounded-2xl border-2 transition-all duration-300"
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLAnchorElement).style.borderColor =
                     "var(--primary)";
                   (e.currentTarget as HTMLAnchorElement).style.color =
-                    "var(--foreground)";
+                    "var(--primary)";
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLAnchorElement).style.borderColor =
@@ -158,30 +158,27 @@ const HeroSection = () => {
             {/* Trust row */}
             <div className="lp-slide-up-4 mt-10 flex items-center gap-5">
               <div className="flex -space-x-2">
-                {[
-                  { bg: "var(--primary)", label: "A" },
-                  { bg: "hsl(162 70% 38%)", label: "R" },
-                  { bg: "hsl(38 92% 50%)", label: "D" },
-                  { bg: "hsl(199 89% 48%)", label: "F" },
-                ].map((av, i) => (
-                  <div
-                    key={i}
-                    className="w-9 h-9 rounded-full border-2 flex items-center justify-center text-xs font-black text-white"
-                    style={{
-                      background: av.bg,
-                      borderColor: "var(--background)",
-                    }}
-                  >
-                    {av.label}
-                  </div>
-                ))}
+                {loading ? (
+                  // Skeleton sederhana saat loading
+                  <div className="w-24 h-9 bg-muted animate-pulse rounded-full opacity-20" />
+                ) : (
+                  avatars.map((av, i) => (
+                    <div
+                      key={i}
+                      className="w-9 h-9 rounded-full border-2 flex items-center justify-center text-[10px] font-black text-white"
+                      style={{
+                        background: avatarColors[i % avatarColors.length],
+                        borderColor: "var(--background)",
+                      }}
+                    >
+                      {av.label}
+                    </div>
+                  ))
+                )}
               </div>
-              <p
-                className="text-sm"
-                style={{ color: "var(--muted-foreground)" }}
-              >
-                <span style={{ color: "var(--foreground)", fontWeight: 600 }}>
-                  5.000+
+              <p className="text-sm text-muted-foreground">
+                <span className="text-foreground font-semibold">
+                  {loading ? "..." : `${totalPlayers.toLocaleString()}+`}
                 </span>{" "}
                 pemain aktif minggu ini
               </p>
@@ -192,7 +189,7 @@ const HeroSection = () => {
           <div className="flex-1 flex items-center justify-center relative">
             {/* Main orb */}
             <div
-              className="relative w-72 h-72 lg:w-[400px] lg:h-[400px] rounded-3xl flex items-center justify-center"
+              className="relative w-72 h-72 lg:w-100 lg:h-100 rounded-3xl flex items-center justify-center"
               style={{
                 background:
                   "linear-gradient(135deg, color-mix(in srgb, var(--primary), var(--card) 80%), var(--card))",
@@ -226,64 +223,38 @@ const HeroSection = () => {
               </div>
 
               {/* Floating stat: Real-time */}
-              <div
-                className="lp-float-1 absolute -top-7 -right-7 rounded-2xl p-4 shadow-2xl"
-                style={{
-                  background: "var(--card)",
-                  border: "1px solid var(--border)",
-                }}
-              >
-                <div className="lp-label mb-1">Real-time</div>
-                <div
-                  className="lp-display font-black text-2xl italic"
-                  style={{ color: "var(--foreground)" }}
-                >
-                  3 Slot
+              <div className="lp-float-1 border border-border absolute bg-card -top-7 -right-7 rounded-2xl p-4 shadow-2xl">
+                {/* <div className="lp-label mb-1">Real-time</div> */}
+                <div className="lp-display font-black text-2xl italic text-foreground">
+                  {loading ? "..." : `${slotsToday} Slot`}
                 </div>
-                <div className="text-xs" style={{ color: "var(--primary)" }}>
-                  tersedia hari ini
-                </div>
+                <div className="text-xs text-primary">tersedia hari ini</div>
               </div>
 
               {/* Floating stat: Last booking */}
-              <div
-                className="lp-float-2 absolute -bottom-7 -left-7 rounded-2xl p-4 shadow-2xl"
-                style={{
-                  background: "var(--card)",
-                  border: "1px solid var(--border)",
-                }}
-              >
+              <div className="lp-float-2 border border-border bg-card absolute -bottom-7 -left-7 rounded-2xl p-4 shadow-2xl">
                 <div className="lp-label mb-1">Booking terakhir</div>
-                <div
-                  className="lp-display font-black text-2xl italic"
-                  style={{ color: "var(--foreground)" }}
-                >
-                  2 mnt lalu
+                <div className="lp-display font-black text-2xl italic text-foreground">
+                  {loading ? "..." : lastBooking?.timeRelative || "-"}
                 </div>
-                <div
-                  className="text-xs"
-                  style={{ color: "var(--muted-foreground)" }}
-                >
-                  Lapangan Arena A
+                <div className="text-xs text-muted-foreground">
+                  {loading
+                    ? "Memuat..."
+                    : lastBooking?.fieldName || "Belum ada booking"}
                 </div>
               </div>
 
               {/* Floating stat: Rating */}
-              <div
-                className="lp-float-3 absolute top-1/2 -right-24 -translate-y-1/2 rounded-2xl p-5 shadow-2xl hidden lg:block"
-                style={{ background: "var(--primary)" }}
-              >
-                <div
-                  className="text-[10px] font-black uppercase tracking-widest mb-1"
-                  style={{ color: "var(--primary-foreground)", opacity: 0.75 }}
-                >
+              <div className="lp-float-3 absolute top-1/2 bg-primary -right-24 -translate-y-1/2 rounded-2xl p-5 shadow-2xl hidden lg:block">
+                <div className="text-[10px] text-primary-foreground/75 font-black uppercase tracking-widest mb-1">
                   Rating
                 </div>
-                <div
-                  className="lp-display font-black text-3xl italic"
-                  style={{ color: "var(--primary-foreground)" }}
-                >
-                  4.9★
+                <div className="lp-display font-black text-3xl italic text-primary-foreground leading-none">
+                  {loading ? (
+                    <span className="animate-pulse opacity-50">...</span>
+                  ) : (
+                    `${globalRating}★`
+                  )}
                 </div>
               </div>
             </div>

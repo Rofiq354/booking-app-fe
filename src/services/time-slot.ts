@@ -7,6 +7,9 @@ export interface TimeSlot {
   endTime: string;
   booked?: boolean;
   bookingId?: number;
+  createdAt: string;
+  updatedAt: string;
+  lastBookingAt?: string;
 }
 
 // Data yang dikembalikan oleh /timeslot/:fieldId

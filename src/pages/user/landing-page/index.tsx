@@ -19,10 +19,7 @@ const GlowDivider = () => (
 
 const LandingPage = () => {
   return (
-    <div
-      className="lp-body lp-grain"
-      style={{ background: "var(--background)" }}
-    >
+    <div className="lp-body lp-grain bg-background">
       <HeroSection />
       <MarqueeStrip />
       <StatsSection />

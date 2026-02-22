@@ -1,5 +1,5 @@
 import api from "./api";
-import type { TimeSlotResponse } from "./time-slot";
+import type { TimeSlot, TimeSlotResponse } from "./time-slot";
 
 export interface FieldRequest {
   id: number;
@@ -7,6 +7,9 @@ export interface FieldRequest {
   description: string | null;
   image: string | null | File;
   price: number;
+  slots: TimeSlot[];
+  averageRating: number;
+  totalReviews: number;
 }
 
 export interface ApiResponse {
