@@ -21,10 +21,7 @@ const STEPS = [
 
 const HowItWorksSection = () => {
   return (
-    <section
-      className="py-24 relative overflow-hidden"
-      style={{ background: "var(--background)" }}
-    >
+    <section className="py-24 relative overflow-hidden bg-background">
       {/* Right-side glow */}
       <div
         className="absolute right-0 top-0 bottom-0 w-1/2 pointer-events-none"
@@ -38,12 +35,8 @@ const HowItWorksSection = () => {
         {/* Section header */}
         <div className="mb-16">
           <div className="lp-label mb-4">Cara Kerja</div>
-          <h2
-            className="lp-display font-black text-5xl lg:text-6xl uppercase italic leading-none"
-            style={{ color: "var(--foreground)" }}
-          >
-            Booking dalam{" "}
-            <span style={{ color: "var(--primary)" }}>3 Langkah</span>
+          <h2 className="lp-display text-foreground font-black text-5xl lg:text-6xl uppercase italic leading-none">
+            Booking dalam <span className="text-primary">3 Langkah</span>
           </h2>
         </div>
 
@@ -52,11 +45,9 @@ const HowItWorksSection = () => {
           {STEPS.slice(0, -1).map((_, i) => (
             <div
               key={i}
-              className="hidden md:block absolute top-[4.5rem] text-2xl"
+              className="hidden md:block absolute z-10 text-primary top-18 text-2xl"
               style={{
                 left: `calc(${(i + 1) * 33.33}% - 0.75rem)`,
-                color: "var(--primary)",
-                zIndex: 10,
               }}
             >
               →
@@ -66,11 +57,7 @@ const HowItWorksSection = () => {
           {STEPS.map((step, i) => (
             <div
               key={i}
-              className="lp-hover-lift relative p-8 rounded-2xl border overflow-hidden"
-              style={{
-                background: "var(--card)",
-                borderColor: "var(--border)",
-              }}
+              className="lp-hover-lift bg-card border-border relative p-8 rounded-2xl border overflow-hidden"
             >
               {/* Watermark number */}
               <span className="lp-step-watermark">{step.num}</span>
@@ -78,25 +65,16 @@ const HowItWorksSection = () => {
               <div className="relative">
                 <div className="text-4xl mb-5">{step.icon}</div>
                 <div className="lp-label mb-2">{step.num}</div>
-                <h3
-                  className="lp-display font-black text-2xl uppercase italic mb-3"
-                  style={{ color: "var(--foreground)" }}
-                >
+                <h3 className="lp-display text-foreground font-black text-2xl uppercase italic mb-3">
                   {step.title}
                 </h3>
-                <p
-                  className="text-sm leading-relaxed"
-                  style={{ color: "var(--muted-foreground)" }}
-                >
+                <p className="text-sm leading-relaxed text-muted-foreground">
                   {step.desc}
                 </p>
               </div>
 
               {/* Bottom accent line */}
-              <div
-                className="absolute bottom-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ background: "var(--primary)" }}
-              />
+              <div className="absolute bottom-0 left-0 bg-primary right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
           ))}
         </div>

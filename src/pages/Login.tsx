@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Lock, Mail, Eye, EyeOff, ArrowRight, Zap } from "lucide-react";
+import { Lock, Mail, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../store";
 import { loginUser } from "../store/authSlice";
@@ -58,7 +58,7 @@ const Login = () => {
         />
 
         {/* Center circle */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] rounded-full border-2 border-white/10" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-105 h-105 rounded-full border-2 border-white/10" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full border-2 border-white/20 bg-white/5" />
 
         {/* Half circles kiri & kanan */}
@@ -75,13 +75,22 @@ const Login = () => {
         />
 
         {/* Top brand */}
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center border border-white/20">
-            <Zap size={20} className="text-white" fill="white" />
+        <div className="relative z-10 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-xl">
+            <img
+              src="/brand.svg"
+              alt="Logo"
+              className="w-8 h-8 object-contain brightness-0 invert"
+            />
           </div>
-          <span className="text-white font-bold text-xl tracking-tight">
-            FutsalHub
-          </span>
+          <div className="flex flex-col leading-none">
+            <span className="text-white font-black text-2xl uppercase tracking-tighter italic">
+              Futsal<span className="opacity-80">Hub</span>
+            </span>
+            <span className="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em] mt-0.5">
+              Arena Center
+            </span>
+          </div>
         </div>
 
         {/* Center copy */}
@@ -143,14 +152,19 @@ const Login = () => {
         />
 
         {/* Mobile logo */}
-        <div className="lg:hidden flex items-center gap-2 mb-10">
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{ backgroundColor: "hsl(142 100% 32%)" }}
-          >
-            <Zap size={18} className="text-white" fill="white" />
+        <div className="lg:hidden flex items-center gap-3 mb-10">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
+            <img
+              src="/brand.svg"
+              alt="Logo"
+              className="w-7 h-7 object-contain"
+            />
           </div>
-          <span className="text-foreground font-bold text-lg">FutsalHub</span>
+          <div className="flex flex-col leading-none">
+            <span className="text-xl font-black text-primary uppercase tracking-tighter italic">
+              Futsal<span className="text-foreground">Hub</span>
+            </span>
+          </div>
         </div>
 
         <div className="w-full max-w-sm relative z-10">

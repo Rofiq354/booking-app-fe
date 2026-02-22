@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import {
   Search,
   Calendar,
-  TicketPercent,
   Menu,
   X,
   LogOut,
   UserCircle,
+  LayoutDashboard,
 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -26,13 +26,14 @@ const Navbar: React.FC = () => {
       await dispatch(logoutUser()).unwrap();
       toast.success("Berhasil keluar");
       navigate("/");
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error(error);
       toast.error("Gagal logout");
     }
   };
 
   return (
-    <nav className="bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-[50]">
+    <nav className="bg-background/80 backdrop-blur-md border-b border-border sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
           {/* LOGO */}
@@ -40,11 +41,17 @@ const Navbar: React.FC = () => {
             to="/"
             className="shrink-0 flex items-center group cursor-pointer"
           >
-            <div className="bg-primary p-1.5 rounded-lg mr-2 transform group-hover:rotate-12 transition-transform">
-              <div className="w-6 h-6 border-2 border-primary-foreground rounded-full flex items-center justify-center">
-                <div className="w-1 h-1 bg-primary-foreground rounded-full"></div>
+            <div className="bg-primary/5 p-1 rounded-xl mr-3 transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+              <div className="w-10 h-10 flex items-center justify-center">
+                <img
+                  src="/brand.svg"
+                  alt="FutsalHub Logo"
+                  className="w-full h-full object-contain"
+                />
               </div>
             </div>
+
+            {/* Teks Brand */}
             <div className="flex flex-col leading-none">
               <span className="text-xl font-black text-primary uppercase tracking-tighter italic">
                 Futsal<span className="text-foreground">Hub</span>
@@ -62,16 +69,23 @@ const Navbar: React.FC = () => {
               icon={<Search size={18} />}
               label="Cari Lapangan"
             />
-            <NavLink
-              href="/booked"
-              icon={<Calendar size={18} />}
-              label="Jadwal Saya"
-            />
-            {/* <NavLink
-              href="/promo"
-              icon={<TicketPercent size={18} />}
-              label="Promo"
-            /> */}
+            {user && (
+              <>
+                {user.role === "ADMIN" ? (
+                  <NavLink
+                    href="/admin"
+                    icon={<LayoutDashboard size={18} />}
+                    label="Dashboard Admin"
+                  />
+                ) : (
+                  <NavLink
+                    href="/booked"
+                    icon={<Calendar size={18} />}
+                    label="Jadwal Saya"
+                  />
+                )}
+              </>
+            )}
 
             <div className="h-8 w-px bg-border mx-4"></div>
 
@@ -135,25 +149,29 @@ const Navbar: React.FC = () => {
       <div
         className={`
         md:hidden absolute w-full bg-background border-b border-border transition-all duration-300 ease-in-out overflow-hidden
-        ${isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"}
+        ${isOpen ? "max-h-125 opacity-100" : "max-h-0 opacity-0"}
       `}
       >
         <div className="px-4 pt-2 pb-6 space-y-2 bg-card">
           <MobileNavLink
-            href="/cari"
+            href="/fields"
             icon={<Search size={20} />}
             label="Cari Lapangan"
           />
-          <MobileNavLink
-            href="/booked"
-            icon={<Calendar size={20} />}
-            label="Jadwal Saya"
-          />
-          <MobileNavLink
-            href="/promo"
-            icon={<TicketPercent size={20} />}
-            label="Promo"
-          />
+          {user &&
+            (user.role === "ADMIN" ? (
+              <MobileNavLink
+                href="/admin"
+                icon={<LayoutDashboard size={20} />}
+                label="Dashboard Admin"
+              />
+            ) : (
+              <MobileNavLink
+                href="/booked"
+                icon={<Calendar size={20} />}
+                label="Jadwal Saya"
+              />
+            ))}
 
           <div className="pt-4 border-t border-border mt-4 space-y-3">
             {user ? (

@@ -107,7 +107,7 @@ const FieldCard = ({
           </div>
         </div>
 
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-card via-card/40 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-card via-card/40 to-transparent" />
       </div>
 
       {/* ── Body ── */}
@@ -162,7 +162,7 @@ const FieldCard = ({
             </div>
           </div>
 
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:rotate-[-45deg]">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:-rotate-45">
             <svg
               width="18"
               height="18"

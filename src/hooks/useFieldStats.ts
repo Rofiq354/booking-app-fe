@@ -10,9 +10,20 @@ interface LastBooking {
   timeRelative: string;
 }
 
+interface Testimonial {
+  name: string;
+  text: string;
+  rating: number;
+  avatar: string;
+  avatarBg: string;
+}
+
 interface FieldStats {
+  totalFields: number;
   slotsToday: number;
   lastBooking: LastBooking | null;
+  bookingsToday: number;
+  testimonials: Testimonial[];
   globalRating: string;
   avatars: { label: string }[];
   totalPlayers: number;
@@ -22,7 +33,10 @@ interface FieldStats {
 export const useFieldStats = () => {
   // 2. Gunakan interface tersebut di useState
   const [stats, setStats] = useState<FieldStats>({
+    totalFields: 0,
     slotsToday: 0,
+    bookingsToday: 0,
+    testimonials: [],
     lastBooking: null,
     globalRating: "0.0",
     avatars: [],
@@ -37,10 +51,13 @@ export const useFieldStats = () => {
         const d = res.data.data;
 
         setStats({
+          totalFields: d.totalFields,
           slotsToday: d.slotsToday,
           globalRating: d.globalRating,
+          bookingsToday: d.bookingsToday,
           avatars: d.avatars,
           totalPlayers: d.totalPlayers,
+          testimonials: d.testimonials,
           lastBooking: d.lastBooking
             ? {
                 time: d.lastBooking.time,

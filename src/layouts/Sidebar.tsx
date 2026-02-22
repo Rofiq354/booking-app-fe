@@ -4,7 +4,6 @@ import {
   Dumbbell,
   CalendarCheck,
   ShieldCheck,
-  Zap,
   ChevronRight,
   Menu,
   X,
@@ -24,6 +23,7 @@ const menuItems = [
   { icon: ShieldCheck, label: "Admin", path: "/admin/data-admin" },
 ];
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface SidebarContentProps {
   collapsed: boolean;
   user: any;
@@ -42,25 +42,28 @@ const SidebarContent = ({
   <>
     {/* Brand */}
     <div
-      className={`border-b border-sidebar-border ${collapsed ? "px-3 py-5" : "px-5 py-6"}`}
+      className={`border-b border-sidebar-border ${collapsed ? "px-2 py-5" : "px-5 py-6"}`}
     >
       <Link
         to="/"
         className={`flex items-center ${collapsed ? "justify-center" : "gap-3"}`}
       >
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-sidebar-primary">
-          <Zap
-            size={16}
-            className="text-sidebar-primary-foreground"
-            fill="currentColor"
+        {/* Kotak Logo */}
+        <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-sidebar-primary shadow-lg shadow-sidebar-primary/20 transition-transform hover:scale-105">
+          <img
+            src="/brand.svg"
+            alt="Logo"
+            className="w-6 h-6 object-contain brightness-0 invert"
           />
         </div>
+
+        {/* Teks Brand - Disembunyikan saat collapsed */}
         {!collapsed && (
-          <div>
-            <div className="font-black text-base tracking-tight leading-none text-sidebar-foreground">
-              FutsalHub
+          <div className="flex flex-col leading-none">
+            <div className="font-black text-base tracking-tighter uppercase italic text-sidebar-foreground">
+              Futsal<span className="text-sidebar-primary">Hub</span>
             </div>
-            <div className="text-xs mt-0.5 text-sidebar-primary">
+            <div className="text-[10px] font-bold mt-1 text-muted-foreground uppercase tracking-widest">
               Admin Panel
             </div>
           </div>

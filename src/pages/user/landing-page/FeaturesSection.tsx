@@ -1,3 +1,4 @@
+import { useFieldStats } from "../../../hooks/useFieldStats";
 import Counter from "./Counter";
 
 const FEATURES = [
@@ -19,6 +20,9 @@ const FEATURES = [
 ];
 
 const FeaturesSection = () => {
+  const { globalRating, totalPlayers, totalFields, bookingsToday, loading } =
+    useFieldStats();
+
   return (
     <section className="py-24 relative overflow-hidden">
       {/* Background */}
@@ -36,24 +40,17 @@ const FeaturesSection = () => {
           {/* LEFT: Feature list */}
           <div>
             <div className="lp-label mb-4">Keunggulan Kami</div>
-            <h2
-              className="lp-display font-black text-5xl lg:text-6xl uppercase italic leading-none mb-12"
-              style={{ color: "var(--foreground)" }}
-            >
+            <h2 className="lp-display text-foreground font-black text-5xl lg:text-6xl uppercase italic leading-none mb-12">
               Kenapa Pilih
               <br />
-              <span style={{ color: "var(--primary)" }}>FutsalHub?</span>
+              <span className="text-primary">FutsalHub?</span>
             </h2>
 
             <div className="space-y-5">
               {FEATURES.map((feat, i) => (
                 <div
                   key={i}
-                  className="group flex gap-5 p-5 rounded-2xl border transition-all duration-300 cursor-default"
-                  style={{
-                    background: "var(--card)",
-                    borderColor: "var(--border)",
-                  }}
+                  className="group bg-card border-border flex gap-5 p-5 rounded-2xl border transition-all duration-300 cursor-default"
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLDivElement).style.borderColor =
                       "color-mix(in srgb, var(--primary), transparent 55%)";
@@ -73,16 +70,10 @@ const FeaturesSection = () => {
                     {feat.icon}
                   </div>
                   <div>
-                    <h4
-                      className="lp-display font-black text-xl uppercase italic mb-1"
-                      style={{ color: "var(--foreground)" }}
-                    >
+                    <h4 className="lp-display text-foreground font-black text-xl uppercase italic mb-1">
                       {feat.title}
                     </h4>
-                    <p
-                      className="text-sm leading-relaxed"
-                      style={{ color: "var(--muted-foreground)" }}
-                    >
+                    <p className="text-sm leading-relaxed text-muted-foreground">
                       {feat.desc}
                     </p>
                   </div>
@@ -103,15 +94,8 @@ const FeaturesSection = () => {
                   "0 0 64px color-mix(in srgb, var(--primary), transparent 60%)",
               }}
             >
-              <div
-                className="lp-display font-black italic absolute -right-4 -top-4 leading-none select-none"
-                style={{
-                  fontSize: "8rem",
-                  color: "var(--primary-foreground)",
-                  opacity: 0.1,
-                }}
-              >
-                4.9
+              <div className="lp-display text-primary-foreground/10 text-9xl font-black italic absolute -right-4 -top-4 leading-none select-none">
+                {loading ? "..." : globalRating}
               </div>
               <div
                 className="lp-label mb-3"
@@ -119,47 +103,28 @@ const FeaturesSection = () => {
               >
                 Rating Platform
               </div>
-              <div
-                className="lp-display font-black italic leading-none mb-2"
-                style={{ fontSize: "5rem", color: "var(--primary-foreground)" }}
-              >
-                4.9★
+              <div className="lp-display text-[5rem] text-primary-foreground font-black italic leading-none mb-2">
+                {loading ? "0.0" : globalRating}
+                <span className="text-3xl ml-1">★</span>
               </div>
-              <p style={{ color: "var(--primary-foreground)", opacity: 0.75 }}>
-                dari 2.000+ ulasan pengguna
+              <p className="text-primary-foreground/75">
+                dari {loading ? "..." : (totalPlayers / 3).toFixed(0)}+ ulasan
+                pengguna
               </p>
             </div>
 
             {/* Two mini stat cards */}
             <div className="grid grid-cols-2 gap-5">
-              <div
-                className="lp-hover-lift p-8 rounded-3xl border"
-                style={{
-                  background: "var(--card)",
-                  borderColor: "var(--border)",
-                }}
-              >
+              <div className="lp-hover-lift p-8 rounded-3xl border bg-card border-border">
                 <div className="lp-label mb-2">Booking hari ini</div>
-                <div
-                  className="lp-display font-black italic leading-none"
-                  style={{ fontSize: "3.5rem", color: "var(--foreground)" }}
-                >
-                  <Counter end={234} />
+                <div className="lp-display font-black italic leading-none text-[3.5rem] text-foreground">
+                  <Counter end={loading ? 0 : bookingsToday} />
                 </div>
               </div>
-              <div
-                className="lp-hover-lift p-8 rounded-3xl border"
-                style={{
-                  background: "var(--card)",
-                  borderColor: "var(--border)",
-                }}
-              >
+              <div className="lp-hover-lift p-8 rounded-3xl border bg-card border-border">
                 <div className="lp-label mb-2">Lapangan aktif</div>
-                <div
-                  className="lp-display font-black italic leading-none"
-                  style={{ fontSize: "3.5rem", color: "var(--foreground)" }}
-                >
-                  <Counter end={20} suffix="+" />
+                <div className="lp-display font-black italic leading-none text-[3.5rem] text-foreground">
+                  <Counter end={loading ? 0 : totalFields} suffix="+" />
                 </div>
               </div>
             </div>

@@ -135,7 +135,7 @@ const FieldsPage = () => {
       </div>
 
       {/* ── Toolbar ──────────────────────────────────────────── */}
-      <div className="sticky top-[80px] z-40 border-b border-border py-4 bg-background/80 backdrop-blur-md">
+      <div className="sticky top-20 z-40 border-b border-border py-4 bg-background/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 space-y-4">
           <div className="flex flex-col sm:flex-row gap-3">
             {/* Search Input */}
@@ -221,7 +221,7 @@ const FieldsPage = () => {
 
         {/* Glow Divider */}
         {!loading && !error && (
-          <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-primary to-transparent opacity-50 mb-10 shadow-[0_0_15px_rgba(var(--primary),0.5)]" />
+          <div className="h-px w-full bg-linear-to-r from-transparent via-primary to-transparent opacity-50 mb-10 shadow-[0_0_15px_rgba(var(--primary),0.5)]" />
         )}
 
         {/* Grid */}

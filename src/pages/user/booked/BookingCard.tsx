@@ -78,7 +78,7 @@ const BookingCard = ({
   return (
     <div className="group bg-card border border-border hover:border-primary/30 rounded-2xl overflow-hidden transition-all duration-200 hover:shadow-md">
       {isConfirmOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-card border border-border w-full max-w-[320px] rounded-2xl p-6 shadow-2xl space-y-4 animate-in zoom-in-95 duration-200">
             <div className="flex flex-col items-center text-center space-y-3">
               <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center text-destructive">
@@ -119,7 +119,7 @@ const BookingCard = ({
 
       <div className="flex gap-0 sm:gap-4">
         {/* Field Image */}
-        <div className="hidden sm:block w-28 flex-shrink-0">
+        <div className="hidden sm:block w-28 shrink-0">
           {booking.field.image ? (
             <img
               src={booking.field.image}
@@ -127,7 +127,7 @@ const BookingCard = ({
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full bg-muted flex items-center justify-center min-h-[100px]">
+            <div className="w-full h-full bg-muted flex items-center justify-center min-h-25">
               <span className="text-3xl opacity-20">🏟️</span>
             </div>
           )}
@@ -149,10 +149,10 @@ const BookingCard = ({
             <div className="flex">
               {/* Status badge */}
               <span
-                className={`${status.className} flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide flex-shrink-0 border`}
+                className={`${status.className} flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide shrink-0 border`}
               >
                 <span
-                  className={`w-1.5 h-1.5 rounded-full ${status.dot} flex-shrink-0`}
+                  className={`w-1.5 h-1.5 rounded-full ${status.dot} shrink-0`}
                 />
                 <span className="hidden sm:inline">{status.label}</span>
                 <StatusIcon size={11} className="sm:hidden" />
@@ -207,7 +207,7 @@ const BookingCard = ({
           <div className="flex flex-wrap gap-3">
             {booking.slot && (
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Clock size={12} className="text-primary flex-shrink-0" />
+                <Clock size={12} className="text-primary shrink-0" />
                 <span>
                   {formatTime(booking.slot.startTime)} –{" "}
                   {formatTime(booking.slot.endTime)}
@@ -215,7 +215,7 @@ const BookingCard = ({
               </div>
             )}
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <CalendarCheck size={12} className="text-primary flex-shrink-0" />
+              <CalendarCheck size={12} className="text-primary shrink-0" />
               <span>{formatDate(booking.createdAt)}</span>
             </div>
           </div>

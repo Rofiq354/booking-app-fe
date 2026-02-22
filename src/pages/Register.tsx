@@ -1,14 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Lock,
-  Mail,
-  Eye,
-  EyeOff,
-  ArrowRight,
-  Zap,
-  UserRound,
-} from "lucide-react";
+import { Lock, Mail, Eye, EyeOff, ArrowRight, UserRound } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../store";
 import { registerUser } from "../store/authSlice";
@@ -66,7 +58,7 @@ const Register = () => {
         />
 
         {/* Center circle ornament */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] rounded-full border-2 border-white/10" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-105 h-105 rounded-full border-2 border-white/10" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full border-2 border-white/20 bg-white/5" />
         <div className="absolute left-0 top-1/2 -translate-y-1/2 w-40 h-80 rounded-r-full border-2 border-l-0 border-white/10" />
 
@@ -80,13 +72,22 @@ const Register = () => {
         />
 
         {/* Top brand */}
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center border border-white/20">
-            <Zap size={20} className="text-white" fill="white" />
+        <div className="relative z-10 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-xl">
+            <img
+              src="/brand.svg"
+              alt="Logo"
+              className="w-8 h-8 object-contain brightness-0 invert"
+            />
           </div>
-          <span className="text-white font-bold text-xl tracking-tight">
-            FutsalHub
-          </span>
+          <div className="flex flex-col leading-none">
+            <span className="text-white font-black text-2xl uppercase tracking-tighter italic">
+              Futsal<span className="opacity-80">Hub</span>
+            </span>
+            <span className="text-[10px] font-bold text-white/60 uppercase tracking-[0.2em] mt-0.5">
+              Arena Center
+            </span>
+          </div>
         </div>
 
         {/* Center copy */}
@@ -95,7 +96,7 @@ const Register = () => {
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 rounded-full px-4 py-1.5">
               <span className="w-2 h-2 rounded-full bg-green-300 animate-pulse" />
               <span className="text-green-200 text-xs font-medium tracking-wide uppercase">
-                Daftarkan Akun Admin
+                Daftarkan Akun Anda
               </span>
             </div>
             <h1 className="text-5xl font-black text-white leading-[1.1] tracking-tight">
@@ -104,20 +105,20 @@ const Register = () => {
               <span style={{ color: "hsl(142 100% 65%)" }}>Kendali Penuh.</span>
             </h1>
             <p className="text-green-200/70 text-lg max-w-sm leading-relaxed">
-              Buat akun admin untuk mulai mengelola lapangan, jadwal, dan data
-              booking secara real-time.
+              Buat akun untuk mulai bermain futsal dengan nyaman dan mudah
+              dengan FutsalHub.
             </p>
           </div>
 
           {/* Feature list */}
           <ul className="space-y-3 pt-2">
             {[
-              "Manajemen lapangan & jadwal booking",
-              "Laporan pendapatan & statistik harian",
-              "Notifikasi booking masuk secara instan",
+              "Pantau booking lapangan anda",
+              "Lihat lapangan terdekat",
+              "Notifikasi booking masuk gmail secara instan",
             ].map((item) => (
               <li key={item} className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0">
+                <div className="w-5 h-5 rounded-full bg-white/15 flex items-center justify-center shrink-0">
                   <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
                     <path
                       d="M1.5 5L4 7.5L8.5 2.5"
@@ -154,14 +155,19 @@ const Register = () => {
         />
 
         {/* Mobile logo */}
-        <div className="lg:hidden flex items-center gap-2 mb-10">
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{ backgroundColor: "hsl(142 100% 32%)" }}
-          >
-            <Zap size={18} className="text-white" fill="white" />
+        <div className="lg:hidden flex items-center gap-3 mb-10">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
+            <img
+              src="/brand.svg"
+              alt="Logo"
+              className="w-7 h-7 object-contain"
+            />
           </div>
-          <span className="text-foreground font-bold text-lg">FutsalHub</span>
+          <div className="flex flex-col leading-none">
+            <span className="text-xl font-black text-primary uppercase tracking-tighter italic">
+              Futsal<span className="text-foreground">Hub</span>
+            </span>
+          </div>
         </div>
 
         <div className="w-full max-w-sm relative z-10">
@@ -171,7 +177,7 @@ const Register = () => {
               Buat Akun Baru
             </h2>
             <p className="text-muted-foreground mt-1.5">
-              Daftarkan diri sebagai admin untuk mengakses dashboard.
+              Daftarkan diri sebagai pemain berbakat.
             </p>
           </div>
 
@@ -217,7 +223,7 @@ const Register = () => {
                   name="email"
                   required
                   autoComplete="email"
-                  placeholder="admin@futsalhub.id"
+                  placeholder="user@futsalhub.id"
                   value={form.email}
                   onChange={handleChange}
                   className="w-full pl-10 pr-4 py-3 rounded-xl bg-muted border border-border text-foreground placeholder:text-muted-foreground text-sm transition-all outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary focus:bg-background"

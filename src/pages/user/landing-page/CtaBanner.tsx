@@ -76,7 +76,7 @@ const CtaBanner = () => {
               Daftar Gratis →
             </Link>
             <Link
-              to="/cari"
+              to="/fields"
               className="lp-display font-black text-xl uppercase italic tracking-widest px-12 py-5 rounded-2xl border-2 transition-all duration-300"
               style={{
                 borderColor:

@@ -1,36 +1,25 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { fieldService, type FieldRequest } from "../../../services/field";
-import FieldCard from "./FieldCard";
+import FieldCard from "../fields/FieldCard";
+import type { TimeSlotResponse } from "../../../services/time-slot";
 
 // Skeleton loader untuk card lapangan
 const FieldCardSkeleton = () => (
-  <div
-    className="rounded-2xl border overflow-hidden animate-pulse"
-    style={{ background: "var(--card)", borderColor: "var(--border)" }}
-  >
-    <div className="h-44" style={{ background: "var(--muted)" }} />
+  <div className="rounded-2xl border overflow-hidden animate-pulse bg-card border-border">
+    <div className="h-44 bg-muted" />
     <div className="p-5 space-y-3">
-      <div
-        className="h-5 w-3/4 rounded-lg"
-        style={{ background: "var(--muted)" }}
-      />
+      <div className="h-5 w-3/4 rounded-lg bg-muted" />
       <div className="flex justify-between items-center">
-        <div
-          className="h-7 w-24 rounded-lg"
-          style={{ background: "var(--muted)" }}
-        />
-        <div
-          className="h-9 w-20 rounded-xl"
-          style={{ background: "var(--muted)" }}
-        />
+        <div className="h-7 w-24 rounded-lg bg-muted" />
+        <div className="h-9 w-20 rounded-xl bg-muted" />
       </div>
     </div>
   </div>
 );
 
 const FeaturedFields = () => {
-  const [fields, setFields] = useState<FieldRequest[]>([]);
+  const [fields, setFields] = useState<TimeSlotResponse[] | FieldRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -59,24 +48,20 @@ const FeaturedFields = () => {
   }, []);
 
   return (
-    <section className="py-24" style={{ background: "var(--background)" }}>
+    <section className="py-24 bg-background">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Header row */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
           <div>
             <div className="lp-label mb-4">Lapangan Unggulan</div>
-            <h2
-              className="lp-display font-black text-5xl lg:text-6xl uppercase italic leading-none"
-              style={{ color: "var(--foreground)" }}
-            >
-              Paling <span style={{ color: "var(--primary)" }}>Populer</span>
+            <h2 className="lp-display text-foreground font-black text-5xl lg:text-6xl uppercase italic leading-none">
+              Paling <span className="text-primary">Populer</span>
             </h2>
           </div>
 
           <Link
-            to="/cari"
-            className="lp-display font-black text-sm uppercase italic tracking-widest px-6 py-3 rounded-xl border transition-all duration-300 self-start md:self-auto"
-            style={{ borderColor: "var(--primary)", color: "var(--primary)" }}
+            to="/fields"
+            className="lp-display border-primary text-primary font-black text-sm uppercase italic tracking-widest px-6 py-3 rounded-xl border transition-all duration-300 self-start md:self-auto"
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLAnchorElement).style.background =
                 "var(--primary)";
@@ -107,16 +92,10 @@ const FeaturedFields = () => {
           >
             <span className="text-2xl">⚠️</span>
             <div>
-              <p
-                className="font-bold text-sm"
-                style={{ color: "var(--destructive)" }}
-              >
-                {error}
-              </p>
+              <p className="font-bold text-sm text-destructive">{error}</p>
               <button
                 onClick={() => window.location.reload()}
-                className="text-xs underline mt-1 transition-opacity hover:opacity-70"
-                style={{ color: "var(--destructive)" }}
+                className="text-xs text-destructive underline mt-1 transition-opacity hover:opacity-70"
               >
                 Coba lagi
               </button>
@@ -136,28 +115,15 @@ const FeaturedFields = () => {
                 fields.map((field, i) => (
                   <FieldCard
                     key={field.id}
-                    id={field.id}
-                    name={field.name}
-                    description={field.description}
-                    image={field.image}
-                    price={field.price}
+                    field={field as TimeSlotResponse}
                     delay={`${i * 0.1}s`}
                   />
                 ))
               : // Empty state
                 !error && (
-                  <div
-                    className="col-span-3 text-center py-20 rounded-2xl border"
-                    style={{
-                      background: "var(--card)",
-                      borderColor: "var(--border)",
-                    }}
-                  >
+                  <div className="col-span-3 text-center bg-card border-border py-20 rounded-2xl border">
                     <div className="text-5xl mb-4">🏟️</div>
-                    <p
-                      className="lp-display font-black text-xl uppercase italic"
-                      style={{ color: "var(--muted-foreground)" }}
-                    >
+                    <p className="lp-display font-black text-xl text-muted-foreground uppercase italic">
                       Belum ada lapangan tersedia
                     </p>
                   </div>

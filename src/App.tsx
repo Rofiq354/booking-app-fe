@@ -38,6 +38,7 @@ function App() {
   const dispatch = useAppDispatch();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const { isInitialized } = useSelector((state: RootState) => state.auth);
+  const [showLoading, setShowLoading] = useState(true);
   const initialized = useRef(false);
 
   useEffect(() => {
@@ -60,10 +61,40 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (isInitialized) {
+      const timer = setTimeout(() => {
+        setShowLoading(false);
+      }, 1500); // 1.5 detik delay tambahan
+      return () => clearTimeout(timer);
+    }
+  }, [isInitialized]);
+
   if (!isOnline) return <OfflineScreen />;
 
-  if (!isInitialized) {
-    return <div className="loading-screen">Memuat Aplikasi...</div>;
+  if (showLoading) {
+    return (
+      <div className="fixed inset-0 flex flex-col items-center justify-center bg-background z-9999">
+        <div className="relative flex items-center justify-center mb-8">
+          <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping" />
+          <div className="relative w-20 h-20 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30 transform rotate-12 transition-transform duration-700">
+            <span className="text-primary-foreground font-black text-3xl -rotate-12 italic">
+              F
+            </span>
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center gap-2">
+          <h2 className="text-foreground font-black text-xl italic tracking-tight uppercase">
+            Futsal<span className="text-primary">Hub</span>
+          </h2>
+
+          <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-[0.2em] mt-3 animate-pulse">
+            Menyiapkan Lapangan...
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
