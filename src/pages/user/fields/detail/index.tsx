@@ -18,6 +18,7 @@ import {
   fullFormatPrice as formatPrice,
   formatTime,
 } from "../../../../utils/format";
+import { reviewService } from "../../../../services/review";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const todayISO = () => new Date().toISOString().split("T")[0];
@@ -182,6 +183,45 @@ const FieldDetailPage = () => {
   const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [successBooking, setSuccessBooking] = useState<Booking | null>(null);
+
+  const [eligibleBookingId, setEligibleBookingId] = useState<number | null>(
+    null,
+  );
+
+  // Tambahkan fetch eligibility
+  useEffect(() => {
+    const fetchEligibility = async () => {
+      if (!id) return;
+      try {
+        // Panggil service check eligibility yang tadi dibuat
+        const res = await reviewService.checkEligibility(id);
+        if (res.data.eligible) {
+          setEligibleBookingId(res.data.bookingId);
+        }
+      } catch (err: unknown) {
+        // Jika error (misal belum login), biarkan null
+        setEligibleBookingId(null);
+        console.error(err);
+      }
+    };
+
+    fetchEligibility();
+  }, [id]);
+
+  // Fungsi untuk refresh data setelah user submit review
+  const handleReviewSuccess = async () => {
+    if (!id) return;
+    try {
+      // 1. Ambil ulang detail field (supaya review terbaru muncul di list)
+      const res = await fieldService.getDetailField(id);
+      setField(res.data as FieldDetail);
+
+      // 2. Hilangkan form review karena sudah diisi
+      setEligibleBookingId(null);
+    } catch (err: unknown) {
+      console.error("Gagal refresh data setelah review, ", err);
+    }
+  };
 
   // Fetch field
   useEffect(() => {
@@ -395,6 +435,8 @@ const FieldDetailPage = () => {
             <ReviewSection
               reviews={field.reviews}
               ratingStats={field.ratingStats}
+              eligibleBookingId={eligibleBookingId as number} // Kirim ID ini
+              onReviewSuccess={handleReviewSuccess} // Kirim callback ini
             />
           </div>
 

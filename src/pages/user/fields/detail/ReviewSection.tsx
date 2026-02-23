@@ -1,10 +1,13 @@
 import { CheckCircle, Mail, MessageSquare, Star, X } from "lucide-react";
 import type { Booking } from "../../../../services/booking";
+import { type RatingStats, type Review } from "../../../../types/detail-field";
 import {
-  type RatingStats,
-  type Review,
-} from "../../../../types/detail-field";
-import { fullFormatPrice as formatPrice, formatTime } from "../../../../utils/format";
+  fullFormatPrice as formatPrice,
+  formatTime,
+} from "../../../../utils/format";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { reviewService } from "../../../../services/review";
 
 // ── BookingSuccessModal ───────────────────────────────────────────────────────
 interface BookingSuccessModalProps {
@@ -150,13 +153,49 @@ const RatingBar = ({
 interface ReviewSectionProps {
   reviews: Review[];
   ratingStats: RatingStats;
+  eligibleBookingId: number;
+  onReviewSuccess: () => void;
 }
 
-const ReviewSection = ({ reviews, ratingStats }: ReviewSectionProps) => {
+const ReviewSection = ({
+  reviews,
+  ratingStats,
+  eligibleBookingId,
+  onReviewSuccess,
+}: ReviewSectionProps) => {
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const distribution = [5, 4, 3, 2, 1].map((star) => ({
     star,
     count: reviews.filter((r) => r.rating === star).length,
   }));
+
+  const handleSubmit = async () => {
+    if (rating === 0) return toast.error("Bintangnya diisi dulu yuk!");
+    if (!comment.trim())
+      return toast.error("Kasih ulasan dikit dong buat lapangannya.");
+
+    setIsSubmitting(true);
+    try {
+      // Panggil service yang tadi kita bahas
+      await reviewService.createReview({
+        bookingId: eligibleBookingId,
+        rating,
+        comment,
+      });
+
+      toast.success("Review berhasil dikirim, makasih ya!");
+      setRating(0);
+      setComment("");
+      onReviewSuccess(); // Ini bakal refresh data di FieldDetailPage
+    } catch (error: unknown) {
+      toast.error(error.response?.data?.message || "Gagal kirim review");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -195,6 +234,64 @@ const ReviewSection = ({ reviews, ratingStats }: ReviewSectionProps) => {
           ))}
         </div>
       </div>
+
+      {eligibleBookingId && (
+        <div className="p-6 rounded-3xl bg-primary/5 border-2 border-primary/20 space-y-4 animate-in fade-in zoom-in-95 duration-300">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/20">
+              <Star size={20} className="fill-current" />
+            </div>
+            <div>
+              <h3 className="text-sm font-black text-foreground uppercase tracking-tight">
+                Gimana mainnya kemarin?
+              </h3>
+              <p className="text-[11px] text-muted-foreground font-medium">
+                Berikan rating dan ulasan untuk lapangan ini
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {/* Star Picker */}
+            <div className="flex gap-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setRating(star)}
+                  className="transition-transform active:scale-90 hover:scale-110"
+                >
+                  <Star
+                    size={28}
+                    className={
+                      star <= rating
+                        ? "text-warning fill-warning"
+                        : "text-border fill-transparent"
+                    }
+                  />
+                </button>
+              ))}
+            </div>
+
+            {/* Comment Area */}
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Ceritain kondisi lapangan, lampu, atau pelayanannya..."
+              className="w-full bg-background border border-border rounded-2xl p-4 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+              rows={3}
+            />
+
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-black text-[11px] uppercase tracking-[0.15em] hover:opacity-90 disabled:opacity-50 transition-all shadow-md active:scale-[0.98]"
+            >
+              {isSubmitting ? "Mengirim..." : "Kirim Ulasan"}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Cards */}
       {reviews.length === 0 ? (
